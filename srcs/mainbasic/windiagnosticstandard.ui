@@ -1,0 +1,806 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WinDiagnosticStandard</class>
+ <widget class="QWidget" name="WinDiagnosticStandard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>随访诊治标准</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="wgtSatusBar" native="true">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>30</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="wgtMain" native="true">
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>17</y>
+        <width>761</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tabAgeRange_0">
+       <attribute name="title">
+        <string>6~12月</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabAgeRange_1">
+       <attribute name="title">
+        <string>12~36月</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabAgeRange_2">
+       <attribute name="title">
+        <string>3~6岁</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabAgeRange_3">
+       <attribute name="title">
+        <string>6~20岁</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tabAgeRange_4">
+       <attribute name="title">
+        <string>20~100岁</string>
+       </attribute>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="lblMyopia">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>165</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>近视：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHeadDiagnose">
+      <property name="geometry">
+       <rect>
+        <x>550</x>
+        <y>70</y>
+        <width>201</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>诊治</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHeadFollowUp">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>70</y>
+        <width>191</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>定期随访</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblAstigmatism">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>112</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>散光：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHeadNormal">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>70</y>
+        <width>181</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>正常</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHyperopia">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>214</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>远视：</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnRestore">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>274</y>
+        <width>131</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>恢复默认</string>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_0">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>108</y>
+        <width>171</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.500000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblBgImg">
+      <property name="geometry">
+       <rect>
+        <x>95</x>
+        <y>94</y>
+        <width>701</width>
+        <height>241</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="resources.qrc">:/resource/black_theme/diagnostic-bg.png</pixmap>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_1">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>108</y>
+        <width>161</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>2.250000000000000</double>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_3">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>157</y>
+        <width>171</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>1.250000000000000</double>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_2">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>157</y>
+        <width>161</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.250000000000000</double>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_4">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>206</y>
+        <width>171</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>2.500000000000000</double>
+      </property>
+     </widget>
+     <widget class="CDoubleSpinBox" name="doubleSpinBox_5">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>206</y>
+        <width>161</width>
+        <height>36</height>
+       </rect>
+      </property>
+      <property name="wrapping">
+       <bool>true</bool>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="decimals">
+       <number>2</number>
+      </property>
+      <property name="minimum">
+       <double>-8.000000000000000</double>
+      </property>
+      <property name="maximum">
+       <double>8.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.250000000000000</double>
+      </property>
+      <property name="value">
+       <double>3.500000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblChartMyopiaDiagnose">
+      <property name="geometry">
+       <rect>
+        <x>201</x>
+        <y>266</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(241,4,4);</string>
+      </property>
+      <property name="text">
+       <string>诊治</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblChartMyopiaFollow">
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>266</y>
+        <width>101</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string>定期随访</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblChartNormal">
+      <property name="geometry">
+       <rect>
+        <x>423</x>
+        <y>266</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string>正常</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblChartHyperopiaFollow">
+      <property name="geometry">
+       <rect>
+        <x>527</x>
+        <y>266</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string>定期随访</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblChartHyperopiaDiagno">
+      <property name="geometry">
+       <rect>
+        <x>649</x>
+        <y>266</y>
+        <width>91</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(241,4,4);</string>
+      </property>
+      <property name="text">
+       <string>诊治</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblMyopeaDiagnose">
+      <property name="geometry">
+       <rect>
+        <x>268</x>
+        <y>298</y>
+        <width>68</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string notr="true">0.25</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblMyopeaFollowUp">
+      <property name="geometry">
+       <rect>
+        <x>378</x>
+        <y>298</y>
+        <width>68</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string notr="true">1.25</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHyperopiaFollowUp">
+      <property name="geometry">
+       <rect>
+        <x>491</x>
+        <y>298</y>
+        <width>68</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string notr="true">2.50</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHyperopiaDiagnose">
+      <property name="geometry">
+       <rect>
+        <x>605</x>
+        <y>298</y>
+        <width>68</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">color: rgb(250,250,252);</string>
+      </property>
+      <property name="text">
+       <string notr="true">3.50</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblAstigmatismZero">
+      <property name="geometry">
+       <rect>
+        <x>67</x>
+        <y>112</y>
+        <width>68</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string notr="true">0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QWidget" name="wgtTabBackground" native="true">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>17</y>
+        <width>741</width>
+        <height>36</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QWidget" name="wgtBottomLine" native="true">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>336</y>
+        <width>761</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <zorder>wgtBottomLine</zorder>
+     <zorder>lblBgImg</zorder>
+     <zorder>tabWidget</zorder>
+     <zorder>lblMyopia</zorder>
+     <zorder>lblHeadDiagnose</zorder>
+     <zorder>lblHeadFollowUp</zorder>
+     <zorder>lblAstigmatism</zorder>
+     <zorder>lblHeadNormal</zorder>
+     <zorder>lblHyperopia</zorder>
+     <zorder>btnRestore</zorder>
+     <zorder>doubleSpinBox_0</zorder>
+     <zorder>doubleSpinBox_1</zorder>
+     <zorder>doubleSpinBox_3</zorder>
+     <zorder>doubleSpinBox_2</zorder>
+     <zorder>doubleSpinBox_4</zorder>
+     <zorder>doubleSpinBox_5</zorder>
+     <zorder>lblChartMyopiaDiagnose</zorder>
+     <zorder>lblChartMyopiaFollow</zorder>
+     <zorder>lblChartNormal</zorder>
+     <zorder>lblChartHyperopiaFollow</zorder>
+     <zorder>lblChartHyperopiaDiagno</zorder>
+     <zorder>lblMyopeaDiagnose</zorder>
+     <zorder>lblMyopeaFollowUp</zorder>
+     <zorder>lblHyperopiaFollowUp</zorder>
+     <zorder>lblHyperopiaDiagnose</zorder>
+     <zorder>lblAstigmatismZero</zorder>
+     <zorder>wgtTabBackground</zorder>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="wgtBottom" native="true">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>90</height>
+      </size>
+     </property>
+     <widget class="QPushButton" name="btnBack">
+      <property name="geometry">
+       <rect>
+        <x>707</x>
+        <y>1</y>
+        <width>60</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/resource/black_theme/back_b.png</normaloff>:/resource/black_theme/back_b.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>60</width>
+        <height>60</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblHome">
+      <property name="geometry">
+       <rect>
+        <x>33</x>
+        <y>61</y>
+        <width>67</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>主页</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblBack">
+      <property name="geometry">
+       <rect>
+        <x>704</x>
+        <y>61</y>
+        <width>67</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>返回</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="lblSave">
+      <property name="geometry">
+       <rect>
+        <x>125</x>
+        <y>61</y>
+        <width>67</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>保存</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnSave">
+      <property name="geometry">
+       <rect>
+        <x>128</x>
+        <y>1</y>
+        <width>60</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/resource/black_theme/save_b.png</normaloff>:/resource/black_theme/save_b.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>56</width>
+        <height>56</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnHome">
+      <property name="geometry">
+       <rect>
+        <x>36</x>
+        <y>1</y>
+        <width>60</width>
+        <height>60</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/resource/black_theme/home_b.png</normaloff>:/resource/black_theme/home_b.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>60</width>
+        <height>60</height>
+       </size>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+  <zorder>wgtBottom</zorder>
+  <zorder>wgtSatusBar</zorder>
+  <zorder>wgtMain</zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

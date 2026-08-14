@@ -1,0 +1,76 @@
+// “发送”按钮点击事件
+void CDataTransTestDlg::OnBnClickedBtnSend()
+{
+    DataTransmiter::ReceiverAddr = GetEditString(m_edtIP);
+    DataTransmiter::ReceiverPort = std::stoi(GetEditString(m_edtPort));
+    DataTransmiter::ReceiverPath = GetEditString(m_edtPath);
+
+    DataTransmiter::AuthPath = GetEditString(m_edtAuthPath);
+    DataTransmiter::AuthUser = GetEditString(m_edtAuthUser);
+    DataTransmiter::AuthPassword = GetEditString(m_edtAuthPwd);
+    DataTransmiter::AuthIdent = GetEditString(m_edtAuthIdent);
+
+    DataTransmiter::NeedAuth = m_cbxNeedAuth.GetCheck();
+
+    Patients report(
+        QString(GetEditString(m_edtPatient)),   // patientid
+        QString(""),  // patientname
+        QString(GetEditString(m_edtAgeRange)),          // patientagerange
+        QString("M"),   // patientsex
+        QString("2018-11-01"),   // patientdate
+        QString(GetEditString(m_edtLDS)),            // patientlefteyesph
+        QString(GetEditString(m_edtLDC)),            // patientlefteyecyl
+        QString(GetEditString(m_edtLAxis)),              // patientlefteyeax
+        QString(GetEditString(m_edtRDS)),            // patientrighteyesph
+        QString(GetEditString(m_edtRDC)),            // patientrighteyecyl
+        QString(GetEditString(m_edtRAxis)),              // patientrighteyeax
+        QString(GetEditString(m_edtLPupil)),             // patientlefteyepd
+        QString(GetEditString(m_edtRPupil)),             // patientrighteyepd
+        QString(GetEditString(m_edtPD)),              // patientpd
+        QString("-"),   // patientstuclass
+        QString("10:10:00"),   // patienttesttime
+        false,         // isTest
+        false,         // isBatch
+        QString(GetEditString(m_edtRSE)),            // patientrightse
+        QString(GetEditString(m_edtLSE))             // patientleftse
+    );
+    report.LGazeH = std::stoi(GetEditString(m_edtLGazeH));
+    report.RGazeH = std::stoi(GetEditString(m_edtRGazeH));
+    report.LGazeV = std::stoi(GetEditString(m_edtLGazeV));
+    report.RGazeV = std::stoi(GetEditString(m_edtRGazeV));
+    report.LPtosis = m_cbxLPtosis.GetCheck();
+    report.RPtosis = m_cbxRPtosis.GetCheck();
+
+    std::string msg;
+    bool succeed = DataTransmiter::Send(msg, &report);
+    if (!succeed)
+    {
+        CString cmsg(msg.c_str());
+        MessageBox(cmsg);
+    }
+    else
+        MessageBox(_T("succeed"));
+}
+
+// 身份认证“测试”按钮点击事件
+void CDataTransTestDlg::OnBnClickedBtnTestAuth()
+{
+    DataTransmiter::ReceiverAddr = GetEditString(m_edtIP);
+    DataTransmiter::ReceiverPort = std::stoi(GetEditString(m_edtPort));
+    DataTransmiter::ReceiverPath = GetEditString(m_edtPath);
+
+    DataTransmiter::AuthPath = GetEditString(m_edtAuthPath);
+    DataTransmiter::AuthUser = GetEditString(m_edtAuthUser);
+    DataTransmiter::AuthPassword = GetEditString(m_edtAuthPwd);
+    DataTransmiter::AuthIdent = GetEditString(m_edtAuthIdent);
+
+    std::string msg;
+    bool succeed = DataTransmiter::GetAuth(msg);
+    if (!succeed)
+    {
+        CString cmsg(msg.c_str());
+        MessageBox(cmsg);
+    }
+    else
+        MessageBox(_T("succeed"));
+}

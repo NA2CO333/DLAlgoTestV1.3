@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>aboutdevice</class>
+ <widget class="QWidget" name="aboutdevice">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>关于</string>
+  </property>
+  <widget class="QLabel" name="label_Back">
+   <property name="geometry">
+    <rect>
+     <x>704</x>
+     <y>450</y>
+     <width>67</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>返回</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_Back">
+   <property name="geometry">
+    <rect>
+     <x>707</x>
+     <y>390</y>
+     <width>60</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:5px;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/resource/black_theme/back_b.png</normaloff>:/resource/black_theme/back_b.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblMainProgramVer">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>320</y>
+     <width>301</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblMainProgramVer</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblBaseBoardVer">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>350</y>
+     <width>301</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblBaseBoardVer</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblQtCopyright">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>450</y>
+     <width>661</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblQtCopyright</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblDistanceType">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>350</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblDistanceType</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblBluetoothType">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>380</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblBluetoothType</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblProductModel">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>320</y>
+     <width>241</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblProductModel</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblDeviceCode">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>350</y>
+     <width>241</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblDeviceCode</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblOsVer">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>410</y>
+     <width>261</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblOsVer</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblFirmwareVer">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>380</y>
+     <width>301</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblFirmwareVer</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblRootfsVer">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>320</y>
+     <width>201</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string notr="true">lblRootfsVer</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnDataRestore">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>414</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>数据还原</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnDataBackup">
+   <property name="geometry">
+    <rect>
+     <x>290</x>
+     <y>414</y>
+     <width>101</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>数据备份</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblDiagram">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>352</width>
+     <height>251</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border: 1px solid black;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap>:/resource/black_theme/c_about_b.png</pixmap>
+   </property>
+   <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblRemoteSvc">
+   <property name="geometry">
+    <rect>
+     <x>520</x>
+     <y>419</y>
+     <width>91</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>远程维护</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="CSwitchButton" name="sbtnRemoteSvc">
+   <property name="geometry">
+    <rect>
+     <x>610</x>
+     <y>404</y>
+     <width>71</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="pixmap">
+    <pixmap resource="resources.qrc">:/resource/black_theme/switch-off_b.png</pixmap>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnRemoteSvcLogs">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>377</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>RemoteSvcLogs</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblQrCodeTitle">
+   <property name="geometry">
+    <rect>
+     <x>455</x>
+     <y>38</y>
+     <width>331</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(163, 163, 163);</string>
+   </property>
+   <property name="text">
+    <string>扫码开启服务</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="MProWxSvcQrCode" name="frmQrCode" native="true">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>65</y>
+     <width>245</width>
+     <height>245</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border: 1px solid rgb(61, 62, 63);</string>
+   </property>
+  </widget>
+  <zorder>label_Back</zorder>
+  <zorder>pushButton_Back</zorder>
+  <zorder>lblMainProgramVer</zorder>
+  <zorder>lblBaseBoardVer</zorder>
+  <zorder>lblQtCopyright</zorder>
+  <zorder>lblDistanceType</zorder>
+  <zorder>lblBluetoothType</zorder>
+  <zorder>lblProductModel</zorder>
+  <zorder>lblDeviceCode</zorder>
+  <zorder>lblOsVer</zorder>
+  <zorder>lblFirmwareVer</zorder>
+  <zorder>lblRootfsVer</zorder>
+  <zorder>btnDataRestore</zorder>
+  <zorder>btnDataBackup</zorder>
+  <zorder>lblDiagram</zorder>
+  <zorder>lblRemoteSvc</zorder>
+  <zorder>btnRemoteSvcLogs</zorder>
+  <zorder>lblQrCodeTitle</zorder>
+  <zorder>frmQrCode</zorder>
+  <zorder>sbtnRemoteSvc</zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MProWxSvcQrCode</class>
+   <extends>QWidget</extends>
+   <header location="global">mpro-wx-svc-qr-code.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CSwitchButton</class>
+   <extends>QLabel</extends>
+   <header>mylabel.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

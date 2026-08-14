@@ -1,0 +1,4 @@
+﻿QWidget { color: rgb(250,250,252); }
+QWidget#wgtTop, QWidget#wgtBody, QWidget#wgtBottom { background-color: black; }
+QWidget#wgtTableOd { background-image: url(:/resource/black_theme/winmultiresults_bg_table.jpg); }
+QWidget#wgtTableOs { background-image: url(:/resource/black_theme/winmultiresults_bg_table.jpg); }

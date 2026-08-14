@@ -1,0 +1,2457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>engineerMode</class>
+ <widget class="QWidget" name="engineerMode">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Engineer Mode</string>
+  </property>
+  <widget class="QPushButton" name="pushButton_back">
+   <property name="geometry">
+    <rect>
+     <x>707</x>
+     <y>390</y>
+     <width>60</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="focusPolicy">
+    <enum>Qt::NoFocus</enum>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:15px;
+outline: none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/white_theme/back_w.png</normaloff>:/resource/white_theme/back_w.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="titlie_label">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>0</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>内部配置界面</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_Back">
+   <property name="geometry">
+    <rect>
+     <x>704</x>
+     <y>450</y>
+     <width>67</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>返回</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_Poweroff">
+   <property name="geometry">
+    <rect>
+     <x>36</x>
+     <y>390</y>
+     <width>60</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:15px;
+outline: none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/white_theme/poweroff_w.png</normaloff>:/resource/white_theme/poweroff_w.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_Reboot">
+   <property name="geometry">
+    <rect>
+     <x>123</x>
+     <y>390</y>
+     <width>60</width>
+     <height>60</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius:15px;
+outline: none;</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/white_theme/reboot_w.png</normaloff>:/resource/white_theme/reboot_w.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>60</width>
+     <height>60</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_Poweroff">
+   <property name="geometry">
+    <rect>
+     <x>33</x>
+     <y>450</y>
+     <width>67</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关机</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_Reboot">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>450</y>
+     <width>67</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>重启</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QTabWidget" name="tabWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>781</width>
+     <height>361</height>
+    </rect>
+   </property>
+   <property name="tabShape">
+    <enum>QTabWidget::Rounded</enum>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <property name="documentMode">
+    <bool>false</bool>
+   </property>
+   <widget class="QWidget" name="tabMain">
+    <attribute name="title">
+     <string notr="true">基本设置</string>
+    </attribute>
+    <widget class="myEditLine" name="edtDevNum">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>20</y>
+       <width>171</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>0123457890123456789</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnRestoreDefault">
+     <property name="geometry">
+      <rect>
+       <x>629</x>
+       <y>270</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>恢复默认值</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnSyncTrialStat">
+     <property name="geometry">
+      <rect>
+       <x>629</x>
+       <y>80</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>试用机状态同步</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="gbModel">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>120</y>
+       <width>191</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>产品型号</string>
+     </property>
+     <widget class="QRadioButton" name="rbtnProductSl100S">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>40</y>
+        <width>114</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SL-100S</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtnProductSl100">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>80</y>
+        <width>114</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SL-100</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rbtnProductSl100P">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>120</y>
+        <width>114</width>
+        <height>29</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SL-100P</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsColoredLampEnabled">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>151</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开启固视彩灯</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsMusicEnabled">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>290</y>
+       <width>151</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>开启声音</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_devNum_5">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>81</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>设备编号：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>319</x>
+       <y>64</y>
+       <width>99</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>距离补偿(mm):</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtDistanceFix">
+     <property name="geometry">
+      <rect>
+       <x>430</x>
+       <y>65</y>
+       <width>81</width>
+       <height>32</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_devNum_3">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>20</y>
+       <width>64</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>超声系数:</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtUltraCoefficient">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>20</y>
+       <width>121</width>
+       <height>32</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>70</y>
+       <width>251</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>灯珠</string>
+     </property>
+     <widget class="QComboBox" name="cbbLedLevelEccentric">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>110</y>
+        <width>81</width>
+        <height>33</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="cbbLedLevelMiddle">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>70</y>
+        <width>81</width>
+        <height>33</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>75</y>
+        <width>121</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>中心灯珠电流：</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>114</y>
+        <width>121</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>偏心灯珠电流：</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="ckbIsSetLedLevel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>131</width>
+        <height>28</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>设置灯珠电流</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsInvertImg">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>290</y>
+       <width>141</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>倒转图像</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnDevActivate">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>140</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>激活设备(离线)</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnGotoFocus">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>20</y>
+       <width>131</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>进入调焦</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tabMeasure">
+    <attribute name="title">
+     <string notr="true">测量参数</string>
+    </attribute>
+    <widget class="myEditLine" name="edtMaxAlgoFail">
+     <property name="geometry">
+      <rect>
+       <x>650</x>
+       <y>230</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cbbDistanceUnit">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>80</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>cm</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>mm</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>80</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>距离单位：</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>130</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>距离允差(mm)</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtDistTolerance">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>130</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtMaxGazeDeviation">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>30</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>30</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>最大固视偏差 (°)</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_version_22">
+     <property name="geometry">
+      <rect>
+       <x>533</x>
+       <y>230</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>~推值转灯次数:</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QWidget" name="wgtMinPupilStdDev" native="true">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>270</y>
+       <width>211</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <widget class="myEditLine" name="edtMinPupilStdDev">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_version_23">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>111</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>最小标准偏差：</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="wgtPupilDetectedCount" native="true">
+     <property name="geometry">
+      <rect>
+       <x>530</x>
+       <y>270</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <widget class="myEditLine" name="edtPupilDetectedCount">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>91</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_version_25">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>10</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>瞳孔识别帧数:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="wgtMinPupilParamRatio" native="true">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>270</y>
+       <width>211</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <widget class="QLabel" name="lblPercent">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>10</y>
+        <width>13</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="text">
+       <string>%</string>
+      </property>
+     </widget>
+     <widget class="myEditLine" name="edtMinPupilParamRatio">
+      <property name="geometry">
+       <rect>
+        <x>110</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_version_19">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>94</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>最小瞳孔比例:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="lblDist">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>30</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>测距间隔(ms):</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtDistanceInterval">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>30</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QWidget" name="wgtPupilAverageRange" native="true">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>70</y>
+       <width>281</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <widget class="myEditLine" name="edtPupilAverageMin">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_version_24">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>瞳孔灰度范围：</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="myEditLine" name="edtPupilAverageMax">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>27</x>
+       <y>230</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>取景时帧率</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtFrameRate">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>230</y>
+       <width>81</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QWidget" name="wgtExposureRange" native="true">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>120</y>
+       <width>281</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <widget class="myEditLine" name="edtExposureMsMin">
+      <property name="geometry">
+       <rect>
+        <x>120</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_version_26">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>111</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>曝光时间范围：</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="myEditLine" name="edtExposureMsMax">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>10</y>
+        <width>71</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </widget>
+    <widget class="myEditLine" name="edtExpoCoarseAdjStepMs">
+     <property name="geometry">
+      <rect>
+       <x>450</x>
+       <y>190</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>320</x>
+       <y>190</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>曝光粗调步长(ms)</string>
+     </property>
+    </widget>
+    <zorder>wgtMinPupilParamRatio</zorder>
+    <zorder>edtMaxAlgoFail</zorder>
+    <zorder>cbbDistanceUnit</zorder>
+    <zorder>label_2</zorder>
+    <zorder>label_5</zorder>
+    <zorder>edtDistTolerance</zorder>
+    <zorder>edtMaxGazeDeviation</zorder>
+    <zorder>label_9</zorder>
+    <zorder>label_version_22</zorder>
+    <zorder>wgtMinPupilStdDev</zorder>
+    <zorder>wgtPupilDetectedCount</zorder>
+    <zorder>lblDist</zorder>
+    <zorder>edtDistanceInterval</zorder>
+    <zorder>wgtPupilAverageRange</zorder>
+    <zorder>label_8</zorder>
+    <zorder>edtFrameRate</zorder>
+    <zorder>wgtExposureRange</zorder>
+    <zorder>edtExpoCoarseAdjStepMs</zorder>
+    <zorder>label_15</zorder>
+   </widget>
+   <widget class="QWidget" name="tabMeasure2">
+    <attribute name="title">
+     <string notr="true">测量参数2</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_ScreenerBoxCorrect">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>461</width>
+       <height>221</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>视筛箱校正</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout" rowminimumheight="0,60,60,60">
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_11">
+        <property name="text">
+         <string>球镜度</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>柱镜度</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="maximumSize">
+         <size>
+          <width>90</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>无或直筒</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectSph_General">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectCyl_General">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>130</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>方形视筛箱</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>L形视筛箱</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectSph_Square">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectCyl_Square">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectSph_LSharp">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="CDoubleSpinBox" name="spbResultCorrectCyl_LSharp">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>34</height>
+         </size>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    subcontrol-position: right;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    subcontrol-position: left;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/white_theme/spin-box-minus.png);
+}</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="minimum">
+         <double>-8.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>8.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.250000000000000</double>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QLabel" name="lblEyeWhRatio_Model">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>20</y>
+       <width>141</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>模拟眼瞳孔长宽比</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblEyeWhRatio_Human">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>60</y>
+       <width>141</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>人眼瞳孔长宽比</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtEyeWhRatio_Model">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>16</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtEyeWhRatio_Human">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>56</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtResultStableCountThresh">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>110</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblResultStableCountThresh">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>114</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>结果稳定次数阈值</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtCountMaxMeasureTimes">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>190</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblCountMaxMeasureTimes">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>194</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>最大测量次数</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblHardTriggerIntervalDelayMs">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>244</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>触发间隔附加延时(ms)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtHardTriggerIntervalDelayMs">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>240</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblResultStableDiopterThresh">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>154</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>结果稳定度数阈值</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtResultStableDiopterThresh">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>150</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtHardTriggerDelayMs">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>280</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblHardTriggerDelayMs">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>284</y>
+       <width>161</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>触发延时(ms)</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblTriggerInputType">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>280</y>
+       <width>111</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>触发输入类型</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cbbTriggerInputType">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>280</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>下降沿触发</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>上升沿触发</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tabDebug2">
+    <attribute name="title">
+     <string notr="true">调试工具</string>
+    </attribute>
+    <widget class="QPushButton" name="upgradeFirmwareButton">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>150</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>更新主程序</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="updatePsplash_pushbutton">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>200</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>更新psplash</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="updatePyDB_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>150</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>更新中文字库</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="updateFont_pushbutton">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>200</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>更新字体</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnGetLocalIp">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>260</y>
+       <width>101</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Get Local IP</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsStatisticalEnabled">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>40</y>
+       <width>131</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~超时出统计值</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsEnableMonthAgeVision">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>80</y>
+       <width>131</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~月龄估值</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbEnableEngineerPwd">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>80</y>
+       <width>111</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~开启密码</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbBluetoothUi">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>111</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>有蓝牙模块</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblDistanceTypeLabel">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>145</y>
+       <width>101</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">~测距模组：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cbbDistanceType">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>140</y>
+       <width>231</width>
+       <height>33</height>
+      </rect>
+     </property>
+     <property name="currentIndex">
+      <number>-1</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblVersion">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>70</y>
+       <width>91</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Ver：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="curve_comboBox">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>30</y>
+       <width>181</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="currentText">
+      <string notr="true">1</string>
+     </property>
+     <item>
+      <property name="text">
+       <string notr="true">1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string notr="true">3</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_curve">
+     <property name="geometry">
+      <rect>
+       <x>311</x>
+       <y>30</y>
+       <width>91</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string notr="true">曲线选择：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="version">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>70</y>
+       <width>181</width>
+       <height>32</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QFrame" name="frmAlgo">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>200</y>
+       <width>221</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>13</y>
+        <width>81</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>~瞳孔算法</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="cbbPupilAlgoVer">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>10</y>
+        <width>121</width>
+        <height>33</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>-1</number>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QCheckBox" name="ckbPupilAccutrately">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>256</y>
+       <width>131</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~精确定位</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbSpecifiedAlgo">
+     <property name="geometry">
+      <rect>
+       <x>560</x>
+       <y>214</y>
+       <width>99</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~强制指定</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsTurnLampTestMode">
+     <property name="geometry">
+      <rect>
+       <x>630</x>
+       <y>280</y>
+       <width>131</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~转灯测试模式</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tabDebug">
+    <attribute name="title">
+     <string notr="true">调试工具2</string>
+    </attribute>
+    <widget class="QCheckBox" name="ckbEnablePrintScreen">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>100</y>
+       <width>141</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~开启屏幕截图</string>
+     </property>
+    </widget>
+    <widget class="myEditLine" name="edtCaptureInterval">
+     <property name="geometry">
+      <rect>
+       <x>147</x>
+       <y>180</y>
+       <width>71</width>
+       <height>32</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbLogToFile">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>100</y>
+       <width>171</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~Log 到文件</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbAutoTest">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>140</y>
+       <width>171</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~开启连拍模式</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="led_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>390</x>
+       <y>280</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>测试LED</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="exportDB_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>280</y>
+       <width>100</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导出数据库</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="exportLog_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>280</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导出log</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbShowVoltage">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>20</y>
+       <width>141</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~显示电压</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraRestartCnt">
+     <property name="geometry">
+      <rect>
+       <x>500</x>
+       <y>280</y>
+       <width>141</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>重启|错帧:00|00</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbSaveImage">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>60</y>
+       <width>141</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~开启存图</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cbbLogFilter">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>60</y>
+       <width>111</width>
+       <height>33</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lblLogFilter">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>64</y>
+       <width>81</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~LogFilter</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbLogEnabled">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>20</y>
+       <width>171</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~启用 Log</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbSaveSimulateImage">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>60</y>
+       <width>171</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~保存模拟抓图数据</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbUseSimulateImage">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>100</y>
+       <width>171</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~使用模拟抓图数据</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnGetContrast">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>130</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>相机对比度</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnResetCameraParm">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>170</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>恢复相机参数</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnLampCalibrate">
+     <property name="geometry">
+      <rect>
+       <x>660</x>
+       <y>280</y>
+       <width>100</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>灯板校准</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsManualTurnLamp">
+     <property name="geometry">
+      <rect>
+       <x>620</x>
+       <y>100</y>
+       <width>161</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~手动转灯(非受控时)</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsMagnifyPupilImg">
+     <property name="geometry">
+      <rect>
+       <x>620</x>
+       <y>140</y>
+       <width>161</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~放大瞳孔</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsSingleThreadCalc">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>140</y>
+       <width>141</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~单线程计算</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cbbLogLevelMin">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>20</y>
+       <width>111</width>
+       <height>33</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraUninit">
+     <property name="geometry">
+      <rect>
+       <x>389</x>
+       <y>230</y>
+       <width>101</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>相机反初始化</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraPowerOn">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>230</y>
+       <width>80</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>相机上电</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraPowerOff">
+     <property name="geometry">
+      <rect>
+       <x>500</x>
+       <y>230</y>
+       <width>80</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>相机断电</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraInit">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>230</y>
+       <width>80</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>相机初始化</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnCameraRePowerOn">
+     <property name="geometry">
+      <rect>
+       <x>670</x>
+       <y>180</y>
+       <width>80</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>80</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>相机重上电</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="ckbIsSimulatedEye">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>20</y>
+       <width>151</width>
+       <height>29</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>~是模拟眼</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnUnitDebug">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>280</y>
+       <width>100</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>单元调试</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_devNum_6">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>180</y>
+       <width>111</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>连拍时间间隔(s):</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnQuit">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>390</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnQuitToToolkits">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>390</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>退出到工具箱</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>440</y>
+     <width>301</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>以“~”开头的设置项，重启后将恢复缺省值</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnShellSimulate">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>390</y>
+     <width>131</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Shell</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="ckbDebugMode">
+   <property name="geometry">
+    <rect>
+     <x>540</x>
+     <y>440</y>
+     <width>101</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>~调试模式</string>
+   </property>
+  </widget>
+  <zorder>tabWidget</zorder>
+  <zorder>pushButton_back</zorder>
+  <zorder>label_Back</zorder>
+  <zorder>pushButton_Poweroff</zorder>
+  <zorder>pushButton_Reboot</zorder>
+  <zorder>label_Poweroff</zorder>
+  <zorder>label_Reboot</zorder>
+  <zorder>titlie_label</zorder>
+  <zorder>btnQuit</zorder>
+  <zorder>btnQuitToToolkits</zorder>
+  <zorder>label</zorder>
+  <zorder>btnShellSimulate</zorder>
+  <zorder>ckbDebugMode</zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>myEditLine</class>
+   <extends>QLineEdit</extends>
+   <header>myeditline.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CDoubleSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>doublespinbox.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

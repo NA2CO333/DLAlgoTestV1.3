@@ -1,0 +1,20 @@
+#!/bin/bash
+
+/bin/screener
+EXIT_STAT=$?
+
+echo "\$LOOP_LAUNCH = $LOOP_LAUNCH"
+for i in `seq 1 $LOOP_LAUNCH`
+do
+	echo "\$i = $i, \$EXIT_STAT = $EXIT_STAT"
+	if [ $EXIT_STAT -ne 0 ]; then
+		/bin/screener
+		#taskset -c 1,2,3 /bin/screener
+		EXIT_STAT=$?
+	else
+		echo "\$EXIT_STAT is 0, loop is broken"
+		break
+	fi
+done
+echo "screener launch loop ended"
+

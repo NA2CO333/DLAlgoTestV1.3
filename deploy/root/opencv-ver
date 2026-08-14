@@ -1,0 +1,12 @@
+#!/bin/bash
+
+VER="unknown"
+
+if [ -f /usr/lib/libopencv_core.so.3.4.12 ]; then
+	VER="3.4.12"
+elif [ -f /usr/lib/libopencv_core.so.2.4.11 ]; then
+	VER="2.4.11"
+fi
+
+echo $VER
+

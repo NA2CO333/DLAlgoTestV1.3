@@ -1,0 +1,25 @@
+﻿QWidget { background-color: transparent; color: rgb(250,250,252); }
+
+QLabel { background: transparent; color: rgb(204,204,204); }
+
+QLabel#lblName, #lblSex, #lblBirthDate { color: rgb(255,255,255); }
+
+QPushButton#btnView_0, #btnView_1, #btnView_2, #btnView_3, #btnView_4
+, #btnDelete_0, #btnDelete_1, #btnDelete_2, #btnDelete_3, #btnDelete_4
+{ background-color: rgb(51,56,62); color: rgb(204,204,204); border-radius: 5px; }
+
+QPushButton#btnUpload_0, #btnUpload_1, #btnUpload_2, #btnUpload_3, #btnUpload_4
+{ background: transparent; border-radius: 5px; }
+
+QCheckBox::indicator:unchecked { image: url(:/resource/unchecked.png); }
+QCheckBox::indicator:checked { image: url(:/resource/checked.png); }
+
+QComboBox{ background-color: rgb(51,56,62); color: rgb(204,204,204); }
+QComboBox::drop-down { image: url(:/resource/black_theme/combo-arrow-down_b.png); }
+
+QComboBox QAbstractItemView { background-color: rgb(51,56,62); color: rgb(204,204,204); border: 2px solid rgb(149,149,149); }
+QComboBox QAbstractItemView::item { min-height: 40px; }
+QComboBox QAbstractItemView::item:selected { background-color: rgb(48,140,198); color: rgb(255,255,255); }
+
+QTableWidget { background-color: transparent; color: rgb(255,255,255); border: 1px solid black; gridline-color: rgb(40,42,48); }
+QTableWidget QHeaderView::section { background-color: rgb(26,49,66); color: rgb(152,151,156); height: 21px; }

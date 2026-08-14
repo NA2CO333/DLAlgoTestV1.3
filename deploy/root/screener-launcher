@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#source /root/cpu_performance.sh
+
+cd
+
+VER=`/root/opencv-ver`
+
+echo "opencv version = $VER"
+
+if [ $VER != "3.4.12" ]; then
+	echo "changing opencv version ..."
+	/root/change_opencv_lib_3.4
+	echo "changing opencv version finished"
+else
+	echo "not need to change opencv version"
+fi
+
+cd
+
+source /root/screener-loop-launch
+

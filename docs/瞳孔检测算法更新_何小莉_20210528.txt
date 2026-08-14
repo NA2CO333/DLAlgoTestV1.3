@@ -1,0 +1,59 @@
+瞳孔检测算法
+何小莉 2021-05-28
+
+1.读取图像image，图像大小为752*480*3
+
+2.图像灰度化Gray，图像大小为752*480：OpenCV中cvtColor函数可以实现： cvtColor(image,Gray,CV_BGR2GRAY)
+
+3.图像降维为原来图像的1/4（180*120）为Gray_resize；opencv中resize函数实现：
+resize(Gray, Gray_resize, Size(188, 120), 0, 0, INTER_LINEAR);
+
+4.高斯滤波处理，高斯核子为5*5;；opencv中GaussianBlur函数可实现：GaussianBlur(Gray_resize, Img_Gauss, Size(5, 5), 0, 0 )
+
+[Q]:这里应该进行模糊处理吗？
+模糊处理后，找到的轮廓的数量变少了，可减少不必要的计算及干扰？
+
+5.二值化阈值：计算ostu大津算法二值化的阈值thresholdValue。具体见以下链接：
+https://www.cnblogs.com/mtcnn/p/9411987.html
+
+6.二值化图像：函数threshold。threshold( Img_Gauss,BW,Th,255,CV_THRESH_BINARY)，Th为二值化的阈值，由于单一的阈值没有办法满足大部分的图像，二值化的阈值的扫描范围为Th=[thresholdValue,thresholdValue-3,thresholdValue+3,thresholdValue-6,thresholdValue+6,thresholdValue-9,thresholdValue+9,thresholdValue-12,thresholdValue+12,thresholdValue-15,thresholdValue+15,thresholdValue-18,thresholdValue+18,thresholdValue-50,thresholdValue+50,thresholdValue-80,thresholdValue+80]。
+
+[Q]:如果加减之后的值 < 0 或 > 255 呢？
+[Q]:调试发现阈值增加后，瞳孔轮廓减小，基本不会增加识别率，所以这个方向的增量是否必要？
+
+7.Opencv 中 connectedComponentsWithStats 函数获取二值图像中的连通区域的个数和连通域的 bounding box（矩形区域）, area（面积）,  centroid（质心）
+
+[Q]:opencv 2.4 没有 connectedComponentsWithStats 函数，用 cvFindContours 函数替代？
+[Q]:cvFindContours 用参数 CV_RETR_LIST 时，外白内黑的轮廓（如鼻孔）也算进去，导致找出的轮廓数有 4 个。如何排除？
+例：P00100_8-/fault_pictures/temp01_40_9982.4.bmp
+
+8.过滤出满足条件的连通域：14 <= area < 250，矩形区域面积rect_area/area<1.6，0.6<rect_width/rect_height<1.5
+
+[Q]:矩形区域是 BoundingRect 还是 BoundingBox ？
+[Q]:矩形区域（BoundingRect）面积 - width - height + 1 ？
+
+9.以满足步骤8的连通域的的质心centroid为中心，在Img_Gauss中拷贝截取17*17的区域，并计算这一区域的灰度值的标准偏差STD,满足STD>7的区域为人眼的瞳孔区域。
+
+[Q]:如果瞳孔很大，标准差会不会比较小？
+[Q]:Img_Gauss 灰度标准差偏低，有些图用 Gray_resize 灰度标准差满足条件，可是用 Img_Gauss 却不满足？
+例：
+P00095_53-/fault_pictures/temp01_40_6514.3.bmp
+P00095_53-/fault_pictures/temp02_40_6514.3.bmp
+
+10.二值图像中满足条件的数量为2时，停止扫描二值化阈值，则瞳孔的坐标为满足条件的连通域的质心的位置center=centroid*4；如遍历二值化阈值后无法得到满足条件的数量为2，则瞳孔检测失败。
+
+[Q]:如果满足条件的区域数量大于2呢？
+
+============================================
+
+[Q]:最小瞳孔平均灰度的限制是否有必要？
+
+[Q]:以标准偏差为判断条件，合适吗？
+
+[Q]:第8和第9步之间，应该要检查质心是否超出一定范围。若超出，则无效。
+
+
+
+
+
+

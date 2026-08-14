@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetOpticalTypeOptions</class>
+ <widget class="QDialog" name="WidgetOpticalTypeOptions">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>699</width>
+    <height>291</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Optical Type Options</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: #14171F; border-radius: 12px;</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <widget class="QPushButton" name="btnOpticalTypeGeneral">
+   <property name="geometry">
+    <rect>
+     <x>22</x>
+     <y>72</y>
+     <width>195</width>
+     <height>177</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 14px; background-color: #747C84;</string>
+   </property>
+   <property name="text">
+    <string notr="true"/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/black_theme/btn_optical-type_general.png</normaloff>:/resource/black_theme/btn_optical-type_general.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>195</width>
+     <height>177</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnOpticalTypeLShape">
+   <property name="geometry">
+    <rect>
+     <x>252</x>
+     <y>72</y>
+     <width>195</width>
+     <height>177</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 14px; background-color: #747C84;</string>
+   </property>
+   <property name="text">
+    <string notr="true"/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/black_theme/btn_optical-type_l-shape.png</normaloff>:/resource/black_theme/btn_optical-type_l-shape.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>195</width>
+     <height>177</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnOpticalTypeSquare">
+   <property name="geometry">
+    <rect>
+     <x>480</x>
+     <y>72</y>
+     <width>195</width>
+     <height>177</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">border-radius: 14px; background-color: #747C84;</string>
+   </property>
+   <property name="text">
+    <string notr="true"/>
+   </property>
+   <property name="icon">
+    <iconset resource="../resources.qrc">
+     <normaloff>:/resource/black_theme/btn_optical-type_square.png</normaloff>:/resource/black_theme/btn_optical-type_square.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>195</width>
+     <height>177</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblTitle">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>661</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #FAFAFC;</string>
+   </property>
+   <property name="text">
+    <string>请选择光路类型</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblTitle_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>225</y>
+     <width>161</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #CCCCCC; background-color: transparent;</string>
+   </property>
+   <property name="text">
+    <string>常规</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblTitle_3">
+   <property name="geometry">
+    <rect>
+     <x>270</x>
+     <y>225</y>
+     <width>161</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #CCCCCC; background-color: transparent;</string>
+   </property>
+   <property name="text">
+    <string>L形视筛箱</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblTitle_4">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>225</y>
+     <width>161</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: #CCCCCC; background-color: transparent;</string>
+   </property>
+   <property name="text">
+    <string>方形视筛箱</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

@@ -1,0 +1,33 @@
+﻿
+QWidget { background-color: transparent; color: rgb(250,250,252); }
+
+QLabel { background: transparent; }
+
+QLineEdit{ border-radius: 5px; background-color: rgb(11,15,20); color: rgb(250,250,252);}
+QComboBox#cbbCloudAddr QLineEdit { background-color: rgb(11,15,20); color: rgb(250,250,252); border: none; }
+
+QCheckBox{ background-color: transparent; }
+QCheckBox{ color: rgb(250,250,252); }
+QCheckBox::indicator { width: 20px; height: 20px; }
+QCheckBox::indicator:checked { image: url(:/resource/checked.png); }
+QCheckBox::indicator:unchecked{ image: url(:/resource/unchecked.png); }
+
+QComboBox{ background-color: rgb(51,56,62); color: rgb(204,204,204); }
+QComboBox::drop-down { image: url(:/resource/black_theme/combo-arrow-down_b.png); }
+/* // TODO: 为什么设置 QComboBox::drop-down 的 min-width 属性无效？ */
+
+QComboBox QAbstractItemView { background-color: rgb(51,56,62); color: rgb(204,204,204); border: 2px solid rgb(149,149,149); }
+QComboBox QAbstractItemView::item { min-height: 40px; }
+QComboBox QAbstractItemView::item:selected { background-color: rgb(48,140,198); color: rgb(255,255,255); }
+
+QPushButton { background-color: rgb(28,28,30); border-radius: 5px; }
+
+QPushButton#btnHome         { qproperty-icon: url(:/resource/black_theme/home_b.png); }
+QPushButton#btnSave         { qproperty-icon: url(:/resource/black_theme/save_b.png); }
+QPushButton#btnTestData     { qproperty-icon: url(:/resource/black_theme/date_test_b.png); }
+QPushButton#btnTestAuth     { qproperty-icon: url(:/resource/black_theme/Authentication_test_b.png); }
+QPushButton#btnScanInput    { qproperty-icon: url(:/resource/black_theme/Scan_code_to_set_parameters_b.png); }
+QPushButton#btnBack         { qproperty-icon: url(:/resource/black_theme/back_b.png); }
+
+QPushButton#btnFindServer
+{ background-color: rgb(28,28,30); border-radius: 5px; }

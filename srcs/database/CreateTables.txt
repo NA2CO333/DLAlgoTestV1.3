@@ -1,0 +1,48 @@
+SQL Scripts of Creating Tables
+
+CREATE TABLE HistroyPatients(
+  id INTEGER PRIMARY KEY AUTOINCREMENT
+, patientid int
+, patientname varchar(32)
+, patientagerange varchar(32)
+, patientsex varchar(32)
+, patientdate varchar(32)
+, patientlefteyesph varchar(32)
+, patientlefteyecyl varchar(32)
+, patientlefteyeax varchar(32)
+, patientleftse vatchar(32)
+, patientleftpd varchar(32)
+, patientleftptosis int
+, patientlefthorizontalstrabismushz varchar(32)
+, patientleftverticalstrabismus varchar(32)
+, patientrighteyesph varchar(32)
+, patientrighteyecyl varchar(32)
+, patientrighteyeax varchar(32)
+, patientrightse varchar(32)
+, patientrightpd varchar(32)
+, patientrightptosis int
+, patientrighthorizontalstrabismus varchar(32)
+, patientrightverticalstrabismus varchar(32)
+, patientpd varchar(32)
+, patientstuclass varchar(32)
+, patienttesttime varchar(32)
+, patientphone varchar(32)
+, patientaddress varchar(32)
+, patientwechat varchar(32)
+, barcodedata varchar(32)
+, batchNo int
+, comment1 varchar(32)
+, comment2 varchar(32)
+, istest int
+, isbatch int
+, isneedupload int
+, isuploaded int
+, isneedimage int
+, isuploadedimage int
+, creattime varchar(32)
+-- , grade varchar(32)
+)
+
+CREATE TABLE sqlite_sequence(name, seq)
+
+

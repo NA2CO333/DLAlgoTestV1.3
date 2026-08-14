@@ -1,0 +1,22 @@
+#!/bin/bash -e
+# change opencv lib to version 3.4
+
+cd /root
+
+gzip -dcvf /root/opencv_3.4.12.tar.gz > /root/opencv_3.4.12.tar
+
+if [ -n "$(find /usr/lib -name 'libopencv_*' | head -1)" ]; then
+	rm /usr/lib/libopencv_*
+fi
+
+cd /usr/lib
+
+tar -xvf /root/opencv_3.4.12.tar
+
+source /root/create_links_opencv_3.4
+
+#ls -l /usr/lib/libopencv_*
+
+cd
+
+

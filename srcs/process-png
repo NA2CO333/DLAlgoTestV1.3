@@ -1,0 +1,8 @@
+#!/bin/bash
+# 处理 png 图片，避免“libpng warning: iCCP: known incorrect sRGB profile”警告。注意：本地的 ImageMagick 用的 png 库须是 libpng16 以上。
+mogrify ./mainbasic/resource/*.png
+mogrify ./mainbasic/resource/battery/*.png
+mogrify ./mainbasic/resource/black_theme/*.png
+mogrify ./mainbasic/resource/bluetooth/*.png
+mogrify ./mainbasic/resource/white_theme/*.png
+

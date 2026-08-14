@@ -1,0 +1,77 @@
+﻿QWidget {
+    background-color: transparent;
+    color: rgb(250,250,252);
+}
+QLabel {
+    background: transparent;
+}
+
+/* QTabWidget 不可启用 documentMode */
+QTabWidget::pane {
+    background-color: transparent;
+    border: none;
+    border-top: 1px solid rgb(46,57,70);
+}
+QTabWidget QTabBar {
+    background: transparent;
+}
+QTabWidget QTabBar::tab {
+    width: 152;
+    height: 36;
+    background-color: rgb(28,28,30);
+    border-radius: 5px;
+}
+QTabWidget QTabBar::tab:selected {
+    background-color: rgb(90,90,95);
+}
+/* 用于补上 QTabWidget 按钮圆角的背景色，使之与非选定的页按钮背景色一致 */
+QWidget#wgtTabBackground {
+    background-color: rgb(28,28,30);
+}
+
+/* 底部工具栏分隔线 */
+QWidget#wgtBottomLine {
+    border: none;
+    border-bottom: 1px solid rgb(46,57,70);
+}
+
+QAbstractSpinBox {
+    background-color: rgb(28,28,30);
+}
+QAbstractSpinBox::up-button {
+    subcontrol-origin: border;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/black_theme/spin-box-plus.png);
+}
+QAbstractSpinBox::down-button {
+    subcontrol-origin: border;
+    width: 36px;
+    height: 36px;
+    image: url(:/resource/black_theme/spin-box-minus.png);
+}
+/* 0 表示正常的左减右加的，1 相反 */
+QAbstractSpinBox[statusTip="0"]::up-button, QAbstractSpinBox[statusTip="1"]::down-button {
+    subcontrol-position: right;
+}
+QAbstractSpinBox[statusTip="0"]::down-button, QAbstractSpinBox[statusTip="1"]::up-button {
+    subcontrol-position: left;
+}
+
+QPushButton
+{ border-radius: 5px; }
+
+QPushButton#btnRestore
+{ background-color: rgb(51,56,62); border-radius: 5px; }
+
+QLabel#lblAstigmatismZero,
+QLabel#lblChartMyopiaFollow, QLabel#lblChartNormal, QLabel#lblChartHyperopiaFollow,
+QLabel#lblMyopeaDiagnose, QLabel#lblMyopeaFollowUp, QLabel#lblHyperopiaFollowUp, QLabel#lblHyperopiaDiagnose {
+    color: rgb(160,160,160);
+}
+QLabel#lblChartMyopiaDiagnose, QLabel#lblChartHyperopiaDiagno {
+    color: rgb(141,4,4);
+}
+QLabel#lblBgImg {
+    qproperty-pixmap: url(:/resource/black_theme/diagnostic-bg.png);
+}
