@@ -38,8 +38,18 @@ void CExposureAdjuster::reset()
     m_expoHistory.clear();
     m_countTotal = 0;
 
-    // 可靠曝光状态跨预览会话保留；只有首次尚未稳定时才启用快速搜索。
-    m_isInitialOptimizationActive = !m_hasReliableExposure && !m_isFixed;
+    // 测试模式下，每次预览都模拟首次进入：不复用上一次可靠曝光，并先恢复统一默认曝光。
+    m_coldStartTestActive = (ENABLE_EXPOSURE_COLD_START_TEST != 0) && !m_isFixed;
+    if (m_coldStartTestActive) {
+        m_hasReliableExposure = false;
+    }
+    m_coldStartPending = m_coldStartTestActive;
+    m_coldStartApplied = false;
+    m_coldStartExposureUs = m_coldStartTestActive ? defaultExposureUs() : -1;
+
+    // 正常模式保留可靠曝光；冷启动测试或尚无可靠曝光时启用首次快速搜索。
+    m_isInitialOptimizationActive = !m_isFixed
+            && (m_coldStartTestActive || !m_hasReliableExposure);
     m_initialCandidateIndex = 0;
     m_initialCandidateValuesTried.clear();
     m_initialCandidateTryCount = 0;
@@ -52,8 +62,10 @@ void CExposureAdjuster::reset()
     m_exposureTimingReported = false;
     m_previewStartedAt = std::chrono::steady_clock::now();
     m_adjustmentStartedAt = {};
+    m_firstPupilDetectedAt = {};
     m_sampleCount = 0;
     m_adjustmentCount = 0;
+    m_hasFirstPupilDetected = false;
     m_initialExposure = -1;
     m_finalExposure = -1;
     m_initialGray = -1;
@@ -75,12 +87,25 @@ void CExposureAdjuster::setIsFixed(bool _is_yes)
 
     if (_is_yes) {
         // 固定曝光和调焦模式不进入首次快速优化。
+        m_coldStartTestActive = false;
+        m_coldStartPending = false;
+        m_coldStartApplied = false;
+        m_coldStartExposureUs = -1;
         m_isInitialOptimizationActive = false;
 #if ENABLE_EXPOSURE_TIMING_LOG
         m_initialFastMode = false;
 #endif
-    } else if (!m_hasReliableExposure && m_countTotal == 0) {
-        // initMeasure()可能先reset()、再关闭上一次固定曝光；此时仍应执行首次优化。
+    } else if (m_countTotal == 0
+               && ((ENABLE_EXPOSURE_COLD_START_TEST != 0)
+                   || !m_hasReliableExposure)) {
+        // initMeasure() 可能先 reset()、再关闭上一次固定曝光；此时补建冷启动状态。
+        m_coldStartTestActive = (ENABLE_EXPOSURE_COLD_START_TEST != 0);
+        if (m_coldStartTestActive) {
+            m_hasReliableExposure = false;
+            m_coldStartPending = true;
+            m_coldStartApplied = false;
+            m_coldStartExposureUs = defaultExposureUs();
+        }
         m_isInitialOptimizationActive = true;
 #if ENABLE_EXPOSURE_TIMING_LOG
         m_initialFastMode = true;
@@ -125,6 +150,11 @@ int CExposureAdjuster::inputExposureInfo(bool _is_pupil_succ, int _avg_gray, boo
         m_adjustmentStartedAt = algorithmStartedAt;
         m_initialExposure = _expo_us_curr;
         m_initialGray = _avg_gray;
+    }
+    if (_is_pupil_succ && !m_hasFirstPupilDetected) {
+        // 新计时口径：从预览第一次识别到瞳孔开始，统计至曝光稳定。
+        m_hasFirstPupilDetected = true;
+        m_firstPupilDetectedAt = algorithmStartedAt;
     }
     m_sampleCount++;
     m_finalExposure = _expo_us_curr;
@@ -181,8 +211,26 @@ int CExposureAdjuster::inputExposureInfo(bool _is_pupil_succ, int _avg_gray, boo
         return candidates;
     };
 
+    // 冷启动测试的首个反馈帧可能仍使用上一场曝光，先统一下发默认曝光。
+    // 若当前值已经是默认曝光，则直接使用当前帧，避免一次无意义的重复下发。
+    bool coldStartExposureChanged = false;
+    if (m_coldStartPending) {
+        m_coldStartPending = false;
+        m_coldStartApplied = true;
+        m_coldStartExposureUs = clampExposure(defaultExposureUs());
+        if (!m_initialCandidateValuesTried.contains(m_coldStartExposureUs)) {
+            m_initialCandidateValuesTried.append(m_coldStartExposureUs);
+        }
+        if (_expo_us_curr != m_coldStartExposureUs) {
+            new_expo = m_coldStartExposureUs;
+            coldStartExposureChanged = true;
+        }
+    }
+
     //
-    if (!_is_pupil_succ) {
+    if (coldStartExposureChanged) {
+        // 当前帧是在旧曝光下采集的，不能参与灰度稳定或候选搜索判定。
+    } else if (!_is_pupil_succ) {
         if (m_isInitialOptimizationActive) {
 #if ENABLE_EXPOSURE_TIMING_LOG
             ++m_initialCandidateTryCount;
@@ -435,6 +483,12 @@ void CExposureAdjuster::finishExposureTiming(
                       std::chrono::steady_clock::now() - m_adjustmentStartedAt).count()
             : -1.0;
     const QString resultText = _result ? QString::fromUtf8(_result) : QString("unknown");
+    const double pupilDetectedToStableMs =
+            resultText == QStringLiteral("stable") && m_hasFirstPupilDetected
+            ? std::chrono::duration<double, std::milli>(
+                      std::chrono::steady_clock::now()
+                      - m_firstPupilDetectedAt).count()
+            : -1.0;
 
     // 同一曝光会话只输出一条汇总日志，避免逐帧日志影响现场时序。
     qInfo().noquote()
@@ -442,7 +496,8 @@ void CExposureAdjuster::finishExposureTiming(
                        "adjustment_total_ms=%3 algorithm_total_ms=%4 "
                        "sample_count=%5 adjustment_count=%6 "
                        "initial_exposure_us=%7 final_exposure_us=%8 "
-                       "initial_gray=%9 final_gray=%10 set_exposure_total_ms=%11 %12")
+                       "initial_gray=%9 final_gray=%10 set_exposure_total_ms=%11 "
+                       "pupil_detected_to_stable_ms=%12 %13 %14")
                .arg(resultText)
                .arg(previewTotalMs, 0, 'f', 2)
                .arg(adjustmentTotalMs, 0, 'f', 2)
@@ -454,12 +509,18 @@ void CExposureAdjuster::finishExposureTiming(
                .arg(m_initialGray)
                .arg(m_finalGray)
                .arg(m_setExposureTotalMs, 0, 'f', 2)
+               .arg(pupilDetectedToStableMs, 0, 'f', 2)
                .arg(QString("initial_fast_mode=%1 candidate_try_count=%2 "
                             "proportional_adjust_count=%3 fine_adjust_count=%4")
                         .arg(m_initialFastMode ? "yes" : "no")
                         .arg(m_initialCandidateTryCount)
                         .arg(m_proportionalAdjustCount)
-                        .arg(m_fineAdjustCount));
+                        .arg(m_fineAdjustCount))
+               .arg(QString("cold_start_test=%1 cold_start_applied=%2 "
+                            "cold_start_exposure_us=%3")
+                        .arg(m_coldStartTestActive ? "yes" : "no")
+                        .arg(m_coldStartApplied ? "yes" : "no")
+                        .arg(m_coldStartExposureUs));
 #else
     Q_UNUSED(_result)
     Q_UNUSED(_final_exposure_us)

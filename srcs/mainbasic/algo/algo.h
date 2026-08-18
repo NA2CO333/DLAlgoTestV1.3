@@ -28,6 +28,10 @@
 #include "pupil_light_tracker.h"
 
 class PupilPairOnnxDetector;
+struct PupilPairResult;
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+class PupilPairRknnDetector;
+#endif
 struct FormalCrossRoundState;
 struct FormalStreamingRoundState;
 struct PupilCrossRoundTargetGradientCache;
@@ -697,6 +701,11 @@ private:
     // C800双帧模型统一用于预览兜底和正式首张锚定。
     // 正式入口把当前400×160真实图与同尺寸黑图拼接，只采用真实图半区输出。
     std::unique_ptr<PupilPairOnnxDetector> m_pupilPairOnnxDetector;
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+    // RK3568优先使用NPU；运行时异常后关闭本进程内NPU后端并自动回退ONNX CPU。
+    std::unique_ptr<PupilPairRknnDetector> m_pupilPairRknnDetector;
+    std::atomic<bool> m_pupilPairRknnAvailable{false};
+#endif
     // 首轮22张轨迹和梯度模板缓存，仅由正式混合单线程池访问。
     std::unique_ptr<FormalCrossRoundState> m_formalCrossRoundState;
     // 整次测量只使用一个不可变主模板；仅由m_mutex保护读写。
@@ -776,6 +785,13 @@ private:
     void resetRoundState(int roundNo);
 
     bool ensurePupilModelLoaded();
+    bool pupilPairModelAvailable() const;
+    bool inferPupilPairModel(const cv::Mat& firstImage,
+                             const cv::Mat& secondImage,
+                             PupilPairResult* result,
+                             float logitThreshold,
+                             int minimumComponentArea,
+                             std::string* errorMessage);
     bool detectPupilByModelForPreview(const cv::Mat& img,
                                       enSingleDualEyeMode eyeMode,
                                       stPupilInfo& pupilRight,

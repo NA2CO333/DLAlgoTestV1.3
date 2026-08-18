@@ -6,6 +6,11 @@
 #define ENABLE_EXPOSURE_TIMING_LOG 1
 #endif
 
+#ifndef ENABLE_EXPOSURE_COLD_START_TEST
+// 曝光冷启动测试开关：1 表示每次进入预览都从默认曝光重新寻找合适值；正式使用时改为 0。
+#define ENABLE_EXPOSURE_COLD_START_TEST 1
+#endif
+
 #include <chrono>
 #include <QObject>
 
@@ -63,8 +68,12 @@ protected:
 
     int m_countTotal = 0;                           // 总调节次数
 
-    // 记录本次程序运行期间是否已经获得过可靠曝光；reset()不能清除该状态。
+    // 记录本次程序运行期间是否已经获得过可靠曝光；正常模式下 reset() 不清除该状态。
     bool m_hasReliableExposure = false;
+    bool m_coldStartTestActive = false;             // 本次预览是否启用曝光冷启动测试
+    bool m_coldStartPending = false;                // 是否仍需把相机恢复到默认曝光
+    bool m_coldStartApplied = false;                // 本次预览是否已执行冷启动曝光初始化
+    int m_coldStartExposureUs = -1;                 // 本次冷启动使用的统一起始曝光
     bool m_isInitialOptimizationActive = false;
     int m_initialCandidateIndex = 0;                // 下一个候选曝光在序列中的位置
     QList<int> m_initialCandidateValuesTried;       // 本次快速搜索已经反馈过的候选值
@@ -78,9 +87,11 @@ protected:
 
     std::chrono::steady_clock::time_point m_previewStartedAt;
     std::chrono::steady_clock::time_point m_adjustmentStartedAt;
+    std::chrono::steady_clock::time_point m_firstPupilDetectedAt;
 
     int m_sampleCount = 0;                           // 曝光反馈采样次数
     int m_adjustmentCount = 0;                       // 实际下发新曝光值次数
+    bool m_hasFirstPupilDetected = false;             // 本次预览是否已经首次识别到瞳孔
 
     int m_initialExposure = -1;
     int m_finalExposure = -1;

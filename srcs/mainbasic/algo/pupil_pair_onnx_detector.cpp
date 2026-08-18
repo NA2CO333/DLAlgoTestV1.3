@@ -1,6 +1,7 @@
 #include "pupil_pair_onnx_detector.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cmath>
 #include <exception>
 #include <sstream>
@@ -72,7 +73,7 @@ bool PupilPairOnnxDetector::infer(const cv::Mat &firstImage,
     try
     {
         const int64 start = cv::getTickCount();
-        blob = makePairBlob(firstImage, secondImage, &infos);
+        blob = preparePairBlob(firstImage, secondImage, &infos);
         result->preprocessMs = elapsedMs(start, cv::getTickCount());
     }
     catch (const cv::Exception &exception)
@@ -123,37 +124,17 @@ bool PupilPairOnnxDetector::infer(const cv::Mat &firstImage,
     try
     {
         const int64 start = cv::getTickCount();
-        for (int frame = 0; frame < 2; ++frame)
+        if (!decodePairOutput(output.ptr<float>(),
+                              expectedChannels,
+                              m_tileHeight,
+                              expectedWidth,
+                              infos,
+                              result,
+                              logitThreshold,
+                              minimumComponentArea,
+                              errorMessage))
         {
-            const int channelOffset = m_layout == ChannelStack ? frame * 4 : 0;
-            for (int eye = 0; eye < 2; ++eye)
-            {
-                const int fullChannel = channelOffset + 2 + eye;
-                cv::Mat fullLogits(m_tileHeight,
-                                   expectedWidth,
-                                   CV_32F,
-                                   output.ptr<float>(0, fullChannel));
-                cv::Mat tileLogits =
-                    m_layout == SpatialConcat
-                        ? fullLogits(cv::Rect(frame * m_tileWidth,
-                                             0,
-                                             m_tileWidth,
-                                             m_tileHeight))
-                        : fullLogits;
-                PupilPairEyeResult eyeResult =
-                    extractEye(tileLogits,
-                               infos[frame],
-                               logitThreshold,
-                               minimumComponentArea);
-                if (eye == 0)
-                {
-                    result->frames[frame].subjectRight = eyeResult;
-                }
-                else
-                {
-                    result->frames[frame].subjectLeft = eyeResult;
-                }
-            }
+            return false;
         }
         result->postprocessMs = elapsedMs(start, cv::getTickCount());
     }
@@ -272,6 +253,81 @@ cv::Mat PupilPairOnnxDetector::makePairBlob(
     firstCanvas.copyTo(firstChannel);
     secondCanvas.copyTo(secondChannel);
     return blob;
+}
+
+cv::Mat PupilPairOnnxDetector::preparePairBlob(
+    const cv::Mat &first,
+    const cv::Mat &second,
+    std::array<LetterboxInfo, 2> *infos) const
+{
+    if (infos == nullptr)
+    {
+        CV_Error(cv::Error::StsNullPtr, "Pair letterbox info is null.");
+    }
+    return makePairBlob(first, second, infos);
+}
+
+bool PupilPairOnnxDetector::decodePairOutput(
+    const float *outputData,
+    int outputChannels,
+    int outputHeight,
+    int outputWidth,
+    const std::array<LetterboxInfo, 2> &infos,
+    PupilPairResult *result,
+    float logitThreshold,
+    int minimumComponentArea,
+    std::string *errorMessage) const
+{
+    const int expectedChannels = m_layout == ChannelStack ? 8 : 4;
+    const int expectedWidth =
+        m_layout == ChannelStack ? m_tileWidth : m_tileWidth * 2;
+    if (outputData == nullptr || result == nullptr
+        || outputChannels != expectedChannels
+        || outputHeight != m_tileHeight
+        || outputWidth != expectedWidth)
+    {
+        setError(errorMessage, "Pair output tensor is invalid.");
+        return false;
+    }
+
+    for (int frame = 0; frame < 2; ++frame)
+    {
+        const int channelOffset = m_layout == ChannelStack ? frame * 4 : 0;
+        for (int eye = 0; eye < 2; ++eye)
+        {
+            const int fullChannel = channelOffset + 2 + eye;
+            const size_t channelOffsetElements =
+                static_cast<size_t>(fullChannel)
+                * static_cast<size_t>(outputHeight)
+                * static_cast<size_t>(outputWidth);
+            cv::Mat fullLogits(outputHeight,
+                               outputWidth,
+                               CV_32F,
+                               const_cast<float *>(
+                                   outputData + channelOffsetElements));
+            cv::Mat tileLogits =
+                m_layout == SpatialConcat
+                    ? fullLogits(cv::Rect(frame * m_tileWidth,
+                                         0,
+                                         m_tileWidth,
+                                         m_tileHeight))
+                    : fullLogits;
+            const PupilPairEyeResult eyeResult =
+                extractEye(tileLogits,
+                           infos[frame],
+                           logitThreshold,
+                           minimumComponentArea);
+            if (eye == 0)
+            {
+                result->frames[frame].subjectRight = eyeResult;
+            }
+            else
+            {
+                result->frames[frame].subjectLeft = eyeResult;
+            }
+        }
+    }
+    return true;
 }
 
 PupilPairEyeResult PupilPairOnnxDetector::extractEye(

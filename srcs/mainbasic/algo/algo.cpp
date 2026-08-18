@@ -31,6 +31,9 @@
 #include "refractionstrategy.h"
 #include "perftimer.h"
 #include "pupil_pair_onnx_detector.h"
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+#include "pupil_pair_rknn_detector.h"
+#endif
 #include "pupil_light_tracker.h"
 #include "pupil_cross_round_tracker.h"
 #include <atomic>
@@ -554,8 +557,12 @@ static constexpr float FORMAL_CROSS_SINGLE_EYE_CARRY_MAX_DISPLACEMENT = 24.0f;
 static const std::array<int, 3> FORMAL_CROSS_SPARSE_CAPTURE_NUMBERS =
         {{1, 11, 17}};
 // 第2、17张各自缩放到400×160，再左右拼接成800×160；模型一次输出两张图的四个瞳孔。
-static const char PUPIL_PAIR_MODEL_PATH[] =
+static const char PUPIL_PAIR_ONNX_MODEL_PATH[] =
         "/root/screener-models/pupil/releases/spatial_concat_800x160_dataset12/model_fp32.onnx";
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+static const char PUPIL_PAIR_RKNN_MODEL_PATH[] =
+        "/root/screener-models/pupil/releases/spatial_concat_800x160_dataset12/c800_fp16.rknn";
+#endif
 // 正常样本只调用这一组经过多轮验证的主锚点。L型箱完成光路转换前，
 // 它对应相机实际拍摄的第1张+第11张；其它光路仍由原有转换层统一处理。
 static const std::array<int, 2> FORMAL_PRIMARY_MODEL_ANCHORS = {{2, 17}};
@@ -1316,7 +1323,7 @@ double CAlgo::calcImageClarity(const cv::Mat &_image) const
 bool CAlgo::ensurePupilModelLoaded()
 {
     std::lock_guard<std::mutex> lock(m_pupilModelMutex);
-    if (m_pupilPairOnnxDetector) {
+    if (pupilPairModelAvailable()) {
         return true;
     }
     if (m_pupilModelLoadAttempted) {
@@ -1324,25 +1331,134 @@ bool CAlgo::ensurePupilModelLoaded()
     }
 
     m_pupilModelLoadAttempted = true;
+
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+    std::unique_ptr<PupilPairRknnDetector> rknnDetector(
+            new PupilPairRknnDetector(PUPIL_PAIR_TILE_WIDTH,
+                                      PUPIL_PAIR_TILE_HEIGHT));
+    std::string rknnError;
+    if (rknnDetector->load(PUPIL_PAIR_RKNN_MODEL_PATH, &rknnError)) {
+        const QString apiVersion =
+                QString::fromStdString(rknnDetector->apiVersion());
+        const QString driverVersion =
+                QString::fromStdString(rknnDetector->driverVersion());
+        m_pupilPairRknnDetector = std::move(rknnDetector);
+        m_pupilPairRknnAvailable.store(true, std::memory_order_release);
+        ALGO_KEY_LOG(
+            qInfo().noquote()
+                << QString("[DL_INIT] model=c800,backend=rknn_npu,"
+                           "status=ready,api=%1,driver=%2")
+                   .arg(apiVersion, driverVersion)
+        );
+    } else {
+        ALGO_ERROR_LOG(
+            qWarning().noquote()
+                << QString("[DL_ERROR] stage=rknn_model_load,"
+                           "action=use_onnx_cpu,reason=%1")
+                   .arg(QString::fromStdString(rknnError))
+        );
+    }
+#endif
+
+    // CPU后端始终一并加载，既作为无NPU设备的正常实现，也保证NPU在
+    // 运行期异常时可以立即回退，而不在拍摄线程中临时加载模型。
     std::unique_ptr<PupilPairOnnxDetector> pairDetector(
             new PupilPairOnnxDetector(PupilPairOnnxDetector::SpatialConcat,
                                       PUPIL_PAIR_TILE_WIDTH,
                                       PUPIL_PAIR_TILE_HEIGHT));
     std::string pairError;
-    if (!pairDetector->load(PUPIL_PAIR_MODEL_PATH, &pairError)) {
+    if (!pairDetector->load(PUPIL_PAIR_ONNX_MODEL_PATH, &pairError)) {
+        ALGO_ERROR_LOG(
+            qWarning().noquote()
+                << QString("[DL_ERROR] stage=onnx_model_load,reason=%1")
+                   .arg(QString::fromStdString(pairError))
+        );
+    } else {
+        m_pupilPairOnnxDetector = std::move(pairDetector);
+        ALGO_KEY_LOG(
+            qInfo().noquote()
+                << "[DL_INIT] model=c800,backend=onnx_cpu,status=ready"
+        );
+    }
+
+    if (!pupilPairModelAvailable()) {
         ALGO_ERROR_LOG(
             qCritical().noquote()
-                << QString("[DL_ERROR] stage=model_load,reason=%1")
-                   .arg(QString::fromStdString(pairError))
+                << "[DL_ERROR] stage=model_load,reason=no_available_backend"
         );
         return false;
     }
-
-    m_pupilPairOnnxDetector = std::move(pairDetector);
-    ALGO_KEY_LOG(
-        qInfo().noquote() << "[DL_INIT] model=c800,status=ready"
-    );
     return true;
+}
+
+bool CAlgo::pupilPairModelAvailable() const
+{
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+    if (m_pupilPairRknnDetector
+            && m_pupilPairRknnAvailable.load(std::memory_order_acquire)) {
+        return true;
+    }
+#endif
+    return static_cast<bool>(m_pupilPairOnnxDetector);
+}
+
+bool CAlgo::inferPupilPairModel(const cv::Mat& firstImage,
+                                const cv::Mat& secondImage,
+                                PupilPairResult* result,
+                                float logitThreshold,
+                                int minimumComponentArea,
+                                std::string* errorMessage)
+{
+    std::string npuError;
+#if defined(ENABLE_RKNN_C800) && ENABLE_RKNN_C800
+    if (m_pupilPairRknnDetector
+            && m_pupilPairRknnAvailable.load(std::memory_order_acquire)) {
+        if (m_pupilPairRknnDetector->infer(firstImage,
+                                           secondImage,
+                                           result,
+                                           logitThreshold,
+                                           minimumComponentArea,
+                                           &npuError)) {
+            return true;
+        }
+
+        // 同一次进程中不反复调用已经失败的NPU上下文，避免每张照片
+        // 都重复失败并拖慢拍摄；重启程序后会重新尝试初始化NPU。
+        const bool wasAvailable = m_pupilPairRknnAvailable.exchange(
+                    false, std::memory_order_acq_rel);
+        if (wasAvailable) {
+            ALGO_ERROR_LOG(
+                qCritical().noquote()
+                    << QString("[DL_ERROR] stage=rknn_infer,"
+                               "action=disable_npu_and_fallback_cpu,reason=%1")
+                       .arg(QString::fromStdString(npuError))
+            );
+        }
+    }
+#endif
+
+    if (m_pupilPairOnnxDetector) {
+        std::string onnxError;
+        const bool succeeded = m_pupilPairOnnxDetector->infer(
+                    firstImage,
+                    secondImage,
+                    result,
+                    logitThreshold,
+                    minimumComponentArea,
+                    &onnxError);
+        if (!succeeded && errorMessage) {
+            *errorMessage = npuError.empty()
+                    ? onnxError
+                    : npuError + "; ONNX fallback failed: " + onnxError;
+        }
+        return succeeded;
+    }
+
+    if (errorMessage) {
+        *errorMessage = npuError.empty()
+                ? "No C800 inference backend is available." : npuError;
+    }
+    return false;
 }
 
 bool CAlgo::detectPupilByModelForPreview(const cv::Mat& img,
@@ -1403,7 +1519,7 @@ bool CAlgo::detectPupilByModelForPreview(const cv::Mat& img,
         // C800统一承担预览兜底。第二张输入用同尺寸、同类型全黑图占位，
         // 只读取frames[0]，frames[1]即使产生输出也完全丢弃。
         const cv::Mat blackCompanion = cv::Mat::zeros(img.size(), img.type());
-        if (!m_pupilPairOnnxDetector->infer(
+        if (!inferPupilPairModel(
                     img, blackCompanion, &result, 0.0f, 8, &error)) {
             ALGO_ERROR_LOG(
                 qCritical().noquote()
@@ -4318,7 +4434,7 @@ void CAlgo::processFormalStreamingRound(int roundIdx)
 
         // 正式深度学习版本不允许模型缺失时落回传统算法。这里返回失败，
         // 由末尾的快速无效轮逻辑释放队列并等待下一物理轮重新尝试。
-        if (!m_pupilPairOnnxDetector) {
+        if (!pupilPairModelAvailable()) {
             streamingState->modelRuntimeFailed = true;
             streamingState->failureReason =
                     "C800 detector is unavailable";
@@ -4330,7 +4446,7 @@ void CAlgo::processFormalStreamingRound(int roundIdx)
         std::string pairError;
         ++streamingState->modelCallCount;
         const int64 pairAttemptStart = cv::getTickCount();
-        const bool pairInferOk = m_pupilPairOnnxDetector->infer(
+        const bool pairInferOk = inferPupilPairModel(
                 firstImage,
                 secondImage,
                 &pairResult, 0.0f, 8, &pairError);
@@ -4724,14 +4840,14 @@ void CAlgo::processFormalHybridRound(
 
             // 模型运行库/模型文件异常时，不进入逐帧Haar回退；锚点恢复
             // 阶段结束后仅允许执行有上限的传统安全网。
-            if (!m_pupilPairOnnxDetector) {
+            if (!pupilPairModelAvailable()) {
                 modelRuntimeFailed = true;
                 failureReason = "C800 detector is unavailable";
                 return 0;
             }
             ++modelCallCount;
             const int64 pairAttemptStart = cv::getTickCount();
-            const bool pairInferOk = m_pupilPairOnnxDetector->infer(
+            const bool pairInferOk = inferPupilPairModel(
                     images[firstAnchorImgNo - 1],
                     images[secondAnchorImgNo - 1],
                     &pairResult, 0.0f, 8, &pairError);
@@ -5420,7 +5536,7 @@ bool CAlgo::runFormalC800Pair(const cv::Mat& firstImage,
     bool inferSucceeded = false;
     {
         std::lock_guard<std::mutex> lock(m_pupilModelMutex);
-        if (!m_pupilPairOnnxDetector) {
+        if (!pupilPairModelAvailable()) {
             inferError = "formal C800 detector is null";
         } else {
             // 正式模型调用与预览使用同一CPU线程上限，离开作用域后恢复
@@ -5428,7 +5544,7 @@ bool CAlgo::runFormalC800Pair(const cv::Mat& firstImage,
             ScopedOpenCvThreadCount threadScope(PUPIL_MODEL_CPU_THREADS);
             // 正式入口传入当前真实小图和同尺寸黑图；旧兼容调用仍复用
             // 该底层接口，但不属于正式逐照片异步流程。
-            inferSucceeded = m_pupilPairOnnxDetector->infer(
+            inferSucceeded = inferPupilPairModel(
                     firstImage, secondImage, &result, 0.0f, 8, &inferError);
         }
     }

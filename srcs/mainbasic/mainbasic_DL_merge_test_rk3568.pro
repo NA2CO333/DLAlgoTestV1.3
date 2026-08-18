@@ -70,6 +70,7 @@ SOURCES += \
     algo/algo.cpp \
     algo/algo_utils.cpp \
     algo/pupil_pair_onnx_detector.cpp \
+    algo/pupil_pair_rknn_detector.cpp \
     algo/pupil_light_tracker.cpp \
     algo/pupil_cross_round_tracker.cpp \
     algo/algointf.cpp \
@@ -228,6 +229,7 @@ HEADERS  += \
     algo/algo.h \
     algo/algo_utils.h \
     algo/pupil_pair_onnx_detector.h \
+    algo/pupil_pair_rknn_detector.h \
     algo/pupil_light_tracker.h \
     algo/pupil_cross_round_tracker.h \
     algo/algointf.h \
@@ -455,6 +457,13 @@ LIBS += -L$$PWD/../../lib/opencv_3.4.12/arm64 \
     -lopencv_flann \
     #-lopencv_video \
     -lopencv_core
+
+# C800在RK3568上优先使用RKNN/NPU；OpenCV仍保持3.4.12，ONNX CPU
+# 后端作为运行期安全回退。librknnrt.so部署到/root/screener-libs。
+DEFINES += ENABLE_RKNN_C800=1
+INCLUDEPATH += $$PWD/../../lib/rknn_runtime_2.3.2/include
+LIBS += -L$$PWD/../../lib/rknn_runtime_2.3.2/arm64 -lrknnrt
+QMAKE_RPATHLINKDIR += $$PWD/../../lib/rknn_runtime_2.3.2/arm64
 
 # 板端 protobuf 运行库位于固定目录，避免依赖系统全局搜索路径。
 QMAKE_RPATHDIR += /root/screener-libs
