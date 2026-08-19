@@ -455,7 +455,7 @@ LIBS += -L$$PWD/../../lib/opencv_3.4.12/arm64 \
     -lopencv_features2d \
     -lopencv_calib3d \
     -lopencv_flann \
-    #-lopencv_video \
+    -lopencv_video \
     -lopencv_core
 
 # C800在RK3568上优先使用RKNN/NPU；OpenCV仍保持3.4.12，ONNX CPU

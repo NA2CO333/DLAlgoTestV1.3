@@ -8,7 +8,7 @@
 
 #ifndef ENABLE_EXPOSURE_COLD_START_TEST
 // 曝光冷启动测试开关：1 表示每次进入预览都从默认曝光重新寻找合适值；正式使用时改为 0。
-#define ENABLE_EXPOSURE_COLD_START_TEST 1
+#define ENABLE_EXPOSURE_COLD_START_TEST 0
 #endif
 
 #include <chrono>

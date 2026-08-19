@@ -4,8 +4,27 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numeric>
 
 #include <opencv2/imgproc.hpp>
+
+// 当前工程随代码只分发了OpenCV 3.4.12的部分头文件，但板端完整
+// libopencv_video.so.3.4.12已经存在。这里声明本模块唯一使用的稳定API，
+// 避免错误混入3.2或4.5.5头文件；所有参数均显式传入，不依赖默认值。
+namespace cv
+{
+void calcOpticalFlowPyrLK(InputArray prevImg,
+                          InputArray nextImg,
+                          InputArray prevPts,
+                          InputOutputArray nextPts,
+                          OutputArray status,
+                          OutputArray err,
+                          Size winSize,
+                          int maxLevel,
+                          TermCriteria criteria,
+                          int flags,
+                          double minEigThreshold);
+}
 
 namespace
 {
@@ -1413,6 +1432,259 @@ int unreliableEyeCount(const CandidateResult &candidate,
     }
     return count;
 }
+}
+
+bool PupilLightTracker::buildFlowReference(
+        const cv::Mat &gray,
+        const PupilLightEye &eye,
+        const PupilLightTrackerOptions &options,
+        PupilLightFlowReference *reference,
+        std::string *errorMessage) const
+{
+    if (reference == nullptr) {
+        if (errorMessage != nullptr) {
+            *errorMessage = "flow_reference_null";
+        }
+        return false;
+    }
+    reference->clear();
+    if (gray.empty() || gray.type() != CV_8UC1 || !eye.detected
+            || !std::isfinite(eye.center.x)
+            || !std::isfinite(eye.center.y)
+            || !std::isfinite(eye.radius)
+            || eye.radius <= 0.0F) {
+        if (errorMessage != nullptr) {
+            *errorMessage = "flow_reference_invalid_input";
+        }
+        return false;
+    }
+
+    try {
+        const int featureHalf = std::max(
+                12, std::max(options.flowFeatureHalfWindow,
+                             cvRound(eye.radius * 2.0F)));
+        const cv::Rect imageBounds(0, 0, gray.cols, gray.rows);
+        const cv::Rect desiredFeatureRoi(
+                cvRound(eye.center.x) - featureHalf,
+                cvRound(eye.center.y) - featureHalf,
+                featureHalf * 2 + 1,
+                featureHalf * 2 + 1);
+        // 手持模式允许瞳孔靠近上下边缘；参考区域裁到图内即可，不能整块拒绝。
+        const cv::Rect featureRoi = desiredFeatureRoi & imageBounds;
+        if (featureRoi.width < 5 || featureRoi.height < 5) {
+            if (errorMessage != nullptr) {
+                *errorMessage = "flow_reference_roi_out_of_bounds";
+            }
+            return false;
+        }
+
+        std::vector<cv::Point2f> localPoints;
+        cv::goodFeaturesToTrack(
+                gray(featureRoi), localPoints,
+                std::max(options.flowMaximumFeatures, 1),
+                options.flowFeatureQualityLevel,
+                options.flowFeatureMinimumDistance,
+                cv::Mat(), 3, false, 0.04);
+        if (static_cast<int>(localPoints.size())
+                < options.flowMinimumValidPoints) {
+            if (errorMessage != nullptr) {
+                *errorMessage = "flow_reference_not_enough_features";
+            }
+            return false;
+        }
+
+        reference->gray = gray.clone();
+        reference->points.reserve(localPoints.size());
+        for (const cv::Point2f &point : localPoints) {
+            reference->points.emplace_back(
+                    point.x + static_cast<float>(featureRoi.x),
+                    point.y + static_cast<float>(featureRoi.y));
+        }
+        reference->center = eye.center;
+        reference->radius = eye.radius;
+        reference->valid = true;
+        return true;
+    } catch (const cv::Exception &exception) {
+        reference->clear();
+        if (errorMessage != nullptr) {
+            *errorMessage = exception.what();
+        }
+        return false;
+    }
+}
+
+bool PupilLightTracker::trackOneEyeByFlow(
+        const PupilLightFlowReference &reference,
+        const cv::Mat &targetGray,
+        const PupilLightTrackerOptions &options,
+        PupilLightFlowResult *result,
+        std::string *errorMessage) const
+{
+    if (result == nullptr) {
+        if (errorMessage != nullptr) {
+            *errorMessage = "flow_result_null";
+        }
+        return false;
+    }
+    *result = PupilLightFlowResult{};
+    const int64 start = cv::getTickCount();
+    auto finishTiming = [result, start]() {
+        result->elapsedMs = (cv::getTickCount() - start) * 1000.0
+                / cv::getTickFrequency();
+    };
+    if (!reference.valid || reference.gray.empty()
+            || targetGray.empty() || reference.gray.type() != CV_8UC1
+            || targetGray.type() != CV_8UC1
+            || reference.gray.size() != targetGray.size()
+            || static_cast<int>(reference.points.size())
+                   < options.flowMinimumValidPoints) {
+        result->failureReason = PupilLightFlow_InvalidInput;
+        finishTiming();
+        if (errorMessage != nullptr) {
+            *errorMessage = "flow_invalid_input";
+        }
+        return false;
+    }
+
+    try {
+        std::vector<cv::Point2f> currentPoints;
+        std::vector<uchar> forwardStatus;
+        std::vector<float> forwardError;
+        cv::calcOpticalFlowPyrLK(
+                reference.gray, targetGray, reference.points, currentPoints,
+                forwardStatus, forwardError, options.flowWindowSize,
+                options.flowMaximumLevel,
+                cv::TermCriteria(cv::TermCriteria::COUNT
+                                 | cv::TermCriteria::EPS, 30, 0.01),
+                0, 0.001);
+
+        std::vector<cv::Point2f> backwardPoints;
+        std::vector<uchar> backwardStatus;
+        std::vector<float> backwardError;
+        cv::calcOpticalFlowPyrLK(
+                targetGray, reference.gray, currentPoints, backwardPoints,
+                backwardStatus, backwardError, options.flowWindowSize,
+                options.flowMaximumLevel,
+                cv::TermCriteria(cv::TermCriteria::COUNT
+                                 | cv::TermCriteria::EPS, 30, 0.01),
+                0, 0.001);
+
+        std::vector<cv::Point2f> displacements;
+        const size_t pointCount = reference.points.size();
+        for (size_t index = 0; index < pointCount; ++index) {
+            if (index >= currentPoints.size()
+                    || index >= backwardPoints.size()
+                    || index >= forwardStatus.size()
+                    || index >= backwardStatus.size()
+                    || !forwardStatus[index] || !backwardStatus[index]
+                    || !std::isfinite(currentPoints[index].x)
+                    || !std::isfinite(currentPoints[index].y)
+                    || !std::isfinite(backwardPoints[index].x)
+                    || !std::isfinite(backwardPoints[index].y)
+                    || (index < forwardError.size()
+                        && forwardError[index] > 30.0F)
+                    || (index < backwardError.size()
+                        && backwardError[index] > 30.0F)) {
+                continue;
+            }
+            const double backwardDistance = cv::norm(
+                    backwardPoints[index] - reference.points[index]);
+            if (!std::isfinite(backwardDistance)
+                    || backwardDistance > options.flowMaximumBackwardError) {
+                continue;
+            }
+            displacements.emplace_back(
+                    currentPoints[index].x - reference.points[index].x,
+                    currentPoints[index].y - reference.points[index].y);
+        }
+
+        result->validPointRatio = static_cast<double>(displacements.size())
+                / static_cast<double>(reference.points.size());
+        if (static_cast<int>(displacements.size())
+                < options.flowMinimumValidPoints) {
+            result->failureReason = PupilLightFlow_TooFewValidPoints;
+            finishTiming();
+            return false;
+        }
+        if (result->validPointRatio < options.flowMinimumValidRatio) {
+            result->failureReason = PupilLightFlow_LowValidRatio;
+            finishTiming();
+            return false;
+        }
+
+        std::vector<float> dx;
+        std::vector<float> dy;
+        dx.reserve(displacements.size());
+        dy.reserve(displacements.size());
+        for (const cv::Point2f &displacement : displacements) {
+            dx.push_back(displacement.x);
+            dy.push_back(displacement.y);
+        }
+        std::sort(dx.begin(), dx.end());
+        std::sort(dy.begin(), dy.end());
+        const size_t middle = dx.size() / 2;
+        const float medianDx = dx[middle];
+        const float medianDy = dy[middle];
+        const double displacementMagnitude = std::hypot(
+                static_cast<double>(medianDx),
+                static_cast<double>(medianDy));
+        if (!std::isfinite(displacementMagnitude)
+                || displacementMagnitude > options.flowMaximumDisplacement) {
+            result->failureReason = PupilLightFlow_ResidualTooLarge;
+            finishTiming();
+            return false;
+        }
+
+        std::vector<cv::Point2f> inliers;
+        for (const cv::Point2f &displacement : displacements) {
+            const double residual = std::hypot(
+                    static_cast<double>(displacement.x - medianDx),
+                    static_cast<double>(displacement.y - medianDy));
+            if (residual <= options.flowMaximumResidual) {
+                inliers.push_back(displacement);
+            }
+        }
+        result->validPointCount = static_cast<int>(inliers.size());
+        if (result->validPointCount < options.flowMinimumValidPoints) {
+            result->failureReason = PupilLightFlow_ResidualTooLarge;
+            finishTiming();
+            return false;
+        }
+        // 残差剔除后必须重新计算比例，防止少量一致点绕过质量门禁。
+        result->validPointRatio = static_cast<double>(inliers.size())
+                / static_cast<double>(reference.points.size());
+        if (result->validPointRatio < options.flowMinimumValidRatio) {
+            result->failureReason = PupilLightFlow_LowValidRatio;
+            finishTiming();
+            return false;
+        }
+
+        const cv::Point2f predicted(
+                reference.center.x + medianDx,
+                reference.center.y + medianDy);
+        const float edge = std::max(2.0F, reference.radius);
+        if (predicted.x < edge || predicted.y < edge
+                || predicted.x >= targetGray.cols - edge
+                || predicted.y >= targetGray.rows - edge) {
+            result->failureReason = PupilLightFlow_PredictionOutOfBounds;
+            finishTiming();
+            return false;
+        }
+
+        result->center = predicted;
+        result->radius = reference.radius;
+        result->success = true;
+        result->failureReason = PupilLightFlow_None;
+        finishTiming();
+        return true;
+    } catch (const cv::Exception &exception) {
+        result->failureReason = PupilLightFlow_Exception;
+        finishTiming();
+        if (errorMessage != nullptr) {
+            *errorMessage = exception.what();
+        }
+        return false;
+    }
 }
 
 #if ENABLE_DL_MERGE_TEST_DIAGNOSTICS

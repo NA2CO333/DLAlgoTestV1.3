@@ -3455,7 +3455,8 @@ void CAlgo::processAndStoreLocatedFrame(int roundIdx,
                                         std::uint64_t measurementGeneration,
                                         std::uint64_t roundGeneration,
                                         bool allowTraditionalFallback,
-                                        bool onlyProcessMissingEyes)
+                                        bool onlyProcessMissingEyes,
+                                        bool predictionsAlreadyRefined)
 {
     const auto generationIsCurrent = [this, roundIdx, measurementGeneration,
                                       roundGeneration]() {
@@ -3527,14 +3528,41 @@ void CAlgo::processAndStoreLocatedFrame(int roundIdx,
     initializeDiagnostic(predictedRight, rightLocated, rightRefine);
     initializeDiagnostic(predictedLeft, leftLocated, leftRefine);
 
-    bool rightRefined = needRight && rightLocated
-            && refineFormalPupilPrediction(image, imgNo, whichEye_Right,
-                                           pupilRight, refinedRight,
-                                           rightRefine);
-    bool leftRefined = needLeft && leftLocated
-            && refineFormalPupilPrediction(image, imgNo, whichEye_Left,
-                                           pupilLeft, refinedLeft,
-                                           leftRefine);
+    bool rightRefined = false;
+    bool leftRefined = false;
+    if (predictionsAlreadyRefined) {
+        // 上层已经完成“LK/Small Match预测→129 ROI”，这里仅落盘最终确认坐标，
+        // 避免正式异步路径重复执行129 ROI或重新触发传统算法。
+        rightRefined = needRight && rightLocated;
+        leftRefined = needLeft && leftLocated;
+        if (rightRefined) {
+            refinedRight = pupilRight;
+            rightRefine.valid = true;
+            rightRefine.refinedCenter = pupilRight.center;
+            rightRefine.refinedRadius = static_cast<float>(pupilRight.radius);
+            rightRefine.contourArea = pupilRight.area;
+            rightRefine.contourCircularity = pupilRight.circularity;
+            rightRefine.rejectReason.clear();
+        }
+        if (leftRefined) {
+            refinedLeft = pupilLeft;
+            leftRefine.valid = true;
+            leftRefine.refinedCenter = pupilLeft.center;
+            leftRefine.refinedRadius = static_cast<float>(pupilLeft.radius);
+            leftRefine.contourArea = pupilLeft.area;
+            leftRefine.contourCircularity = pupilLeft.circularity;
+            leftRefine.rejectReason.clear();
+        }
+    } else {
+        rightRefined = needRight && rightLocated
+                && refineFormalPupilPrediction(image, imgNo, whichEye_Right,
+                                               pupilRight, refinedRight,
+                                               rightRefine);
+        leftRefined = needLeft && leftLocated
+                && refineFormalPupilPrediction(image, imgNo, whichEye_Left,
+                                               pupilLeft, refinedLeft,
+                                               leftRefine);
+    }
     if (rightRefined) {
         pupilRight = refinedRight;
     }
@@ -3649,12 +3677,12 @@ void CAlgo::processAndStoreLocatedFrame(int roundIdx,
 
 #if ENABLE_ALGO_TIMING_LOG
     // 129 ROI精修结果在传统兜底/无兜底分支全部结束后记录，确保每只眼使用最终结果。
-    if (needRight) {
+    if (needRight && !predictionsAlreadyRefined) {
         AlgoTiming::event(rightRefined
                               ? AlgoTimingEvent_FormalRoi129Success
                               : AlgoTimingEvent_FormalRoi129Failure);
     }
-    if (needLeft) {
+    if (needLeft && !predictionsAlreadyRefined) {
         AlgoTiming::event(leftRefined
                              ? AlgoTimingEvent_FormalRoi129Success
                              : AlgoTimingEvent_FormalRoi129Failure);
@@ -5814,6 +5842,95 @@ void CAlgo::publishFormalAnchorFromRound(
 #endif
 }
 
+void CAlgo::updateFormalFlowReferences(
+        int roundIdx,
+        int imgNo,
+        const cv::Mat& image,
+        bool rightValid,
+        const stPupilInfo& pupilRight,
+        bool leftValid,
+        const stPupilInfo& pupilLeft,
+        std::uint64_t measurementGeneration,
+        std::uint64_t roundGeneration)
+{
+    if (image.empty() || roundIdx < 0 || roundIdx >= MAX_ROUNDS
+            || imgNo < 1 || imgNo > FRAMES_PER_ROUND) {
+        return;
+    }
+
+    // LK始终在400×160灰度图上取点，参考坐标由最终129 ROI确认结果映射得到。
+    const cv::Mat smallGray = makeFormalSmallGray(image);
+    if (smallGray.empty()) {
+        return;
+    }
+    const float scaleX = static_cast<float>(PUPIL_PAIR_TILE_WIDTH)
+            / static_cast<float>(image.cols);
+    const float scaleY = static_cast<float>(PUPIL_PAIR_TILE_HEIGHT)
+            / static_cast<float>(image.rows);
+    PupilLightTrackerOptions options;
+    PupilLightTracker tracker;
+
+    auto makeFlowEye = [scaleX, scaleY](const stPupilInfo& pupil) {
+        PupilLightEye eye;
+        eye.detected = true;
+        eye.reliable = true;
+        eye.center = cv::Point2f(pupil.center.x * scaleX,
+                                 pupil.center.y * scaleY);
+        eye.radius = static_cast<float>(pupil.radius
+                                        * (scaleX + scaleY) * 0.5F);
+        eye.score = 1.0F;
+        eye.source = PupilSource_RoiRefined;
+        return eye;
+    };
+
+    PupilLightFlowReference candidateRight;
+    PupilLightFlowReference candidateLeft;
+    std::string error;
+    const bool rightBuilt = rightValid
+            && tracker.buildFlowReference(
+                    smallGray, makeFlowEye(pupilRight), options,
+                    &candidateRight, &error);
+    error.clear();
+    const bool leftBuilt = leftValid
+            && tracker.buildFlowReference(
+                    smallGray, makeFlowEye(pupilLeft), options,
+                    &candidateLeft, &error);
+    if (rightBuilt) {
+        candidateRight.sourceImgNo = imgNo;
+        candidateRight.measurementGeneration = measurementGeneration;
+        candidateRight.roundGeneration = roundGeneration;
+    }
+    if (leftBuilt) {
+        candidateLeft.sourceImgNo = imgNo;
+        candidateLeft.measurementGeneration = measurementGeneration;
+        candidateLeft.roundGeneration = roundGeneration;
+    }
+
+    // 特征提取在锁外完成；提交时再次校验代际，并只接受更晚照片，
+    // 防止并发任务的旧结果覆盖已经建立的新参考。
+    std::lock_guard<std::mutex> lock(m_mutex);
+    if (m_formalStreamingStop.load(std::memory_order_acquire)
+            || roundIdx < 0 || roundIdx >= MAX_ROUNDS) {
+        return;
+    }
+    FormalAsyncRoundState& state = m_rounds[roundIdx].asyncState;
+    if (state.measurementGeneration != measurementGeneration
+            || state.roundGeneration != roundGeneration
+            || state.earlyRetryRequested) {
+        return;
+    }
+    if (rightBuilt
+            && (!state.flowRight.valid
+                || state.flowRight.sourceImgNo < imgNo)) {
+        state.flowRight = candidateRight;
+    }
+    if (leftBuilt
+            && (!state.flowLeft.valid
+                || state.flowLeft.sourceImgNo < imgNo)) {
+        state.flowLeft = candidateLeft;
+    }
+}
+
 void CAlgo::processOneFormalAsyncFrame(
         int roundIdx,
         int imgNo,
@@ -5854,6 +5971,336 @@ void CAlgo::processOneFormalAsyncFrame(
         return;
     }
 
+    const auto eyeFlags = get_eye_flags(m_eye);
+    const bool needRight = eyeFlags.first;
+    const bool needLeft = eyeFlags.second;
+    PupilLightTracker tracker;
+    const cv::Mat targetSmall = !smallImage.empty()
+            ? smallImage : makeFormalSmallGray(image);
+    PupilLightFlowReference flowReferenceRight;
+    PupilLightFlowReference flowReferenceLeft;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        const FormalAsyncRoundState& state = m_rounds[roundIdx].asyncState;
+        if (state.flowRight.valid
+                && state.flowRight.measurementGeneration
+                   == measurementGeneration
+                && state.flowRight.roundGeneration == roundGeneration
+                && state.flowRight.sourceImgNo < imgNo) {
+            flowReferenceRight = state.flowRight;
+        }
+        if (state.flowLeft.valid
+                && state.flowLeft.measurementGeneration
+                   == measurementGeneration
+                && state.flowLeft.roundGeneration == roundGeneration
+                && state.flowLeft.sourceImgNo < imgNo) {
+            flowReferenceLeft = state.flowLeft;
+        }
+    }
+
+    PupilLightTrackerOptions options;
+    options.trackSubjectRight = false;
+    options.trackSubjectLeft = false;
+    options.processingScale = 1.0F;
+    options.useFullSmallFrame = true;
+    options.maximumTemplateHalf = FORMAL_LIGHT_TEMPLATE_HALF;
+    options.maximumSearchMargin = FORMAL_LIGHT_SEARCH_MARGIN;
+    options.maximumMovementPadding = FORMAL_LIGHT_MOVEMENT_PADDING;
+    options.minimumMatchScore = FORMAL_TRACK_RELIABLE_SCORE;
+
+    PupilLightFrame tracked;
+    PupilLightTrackerSummary summary;
+    std::string error;
+    const auto begin = std::chrono::steady_clock::now();
+    const float flowScaleX = targetSmall.empty()
+            ? 1.0F : static_cast<float>(image.cols) / targetSmall.cols;
+    const float flowScaleY = targetSmall.empty()
+            ? 1.0F : static_cast<float>(image.rows) / targetSmall.rows;
+    auto makeFlowEye = [flowScaleX, flowScaleY](
+            const PupilLightFlowResult& flow) {
+        PupilLightEye eye;
+        eye.detected = flow.success;
+        eye.reliable = flow.success;
+        eye.center = cv::Point2f(flow.center.x * flowScaleX,
+                                 flow.center.y * flowScaleY);
+        eye.radius = flow.radius * (flowScaleX + flowScaleY) * 0.5F;
+        eye.score = static_cast<float>(flow.validPointRatio);
+        eye.source = PupilSource_LightTrack;
+        return eye;
+    };
+    auto runFlow = [&](const PupilLightFlowReference& reference,
+                       bool requested,
+                       bool subjectRight,
+                       PupilLightEye& output,
+                       bool& succeeded) {
+        if (!requested || !reference.valid || targetSmall.empty()) {
+            return;
+        }
+#if ENABLE_ALGO_TIMING_LOG
+        AlgoTiming::event(AlgoTimingEvent_FormalLKAttempt);
+#endif
+        PupilLightFlowResult flowResult;
+        std::string flowError;
+        const bool flowOk = tracker.trackOneEyeByFlow(
+                reference, targetSmall, options, &flowResult, &flowError);
+        bool flowAccepted = flowOk;
+        if (flowAccepted) {
+            // LK仍须服从与Small Match一致的左右眼水平半区，避免跟到对侧眼。
+            const float minimumX = subjectRight
+                    ? 0.0F
+                    : static_cast<float>(std::min(180, targetSmall.cols));
+            const float maximumX = subjectRight
+                    ? static_cast<float>(std::min(220, targetSmall.cols))
+                    : static_cast<float>(targetSmall.cols);
+            flowAccepted = flowResult.center.x >= minimumX
+                    && flowResult.center.x < maximumX;
+            if (!flowAccepted) {
+                flowError = "flow_prediction_outside_eye_half";
+            }
+        }
+#if ENABLE_ALGO_TIMING_LOG
+        AlgoTiming::recordMilliseconds(
+                AlgoTimingStage_FormalLK, flowResult.elapsedMs);
+        AlgoTiming::event(flowAccepted ? AlgoTimingEvent_FormalLKSuccess
+                                       : AlgoTimingEvent_FormalLKFailure);
+#endif
+        if (flowAccepted) {
+            output = makeFlowEye(flowResult);
+            succeeded = true;
+        } else if (!flowError.empty()) {
+            error = flowError;
+        }
+    };
+    bool flowRightSuccess = false;
+    bool flowLeftSuccess = false;
+    runFlow(flowReferenceRight, needRight, true, tracked.subjectRight,
+            flowRightSuccess);
+    runFlow(flowReferenceLeft, needLeft, false, tracked.subjectLeft,
+            flowLeftSuccess);
+    const PupilLightEye flowOutputRight = tracked.subjectRight;
+    const PupilLightEye flowOutputLeft = tracked.subjectLeft;
+
+    // LK失败的眼才执行固定主锚点Small Match；两只眼的兜底彼此独立。
+    const bool initialFallbackRight = needRight && !flowRightSuccess;
+    const bool initialFallbackLeft = needLeft && !flowLeftSuccess;
+    bool fallbackTracked = false;
+    if (initialFallbackRight || initialFallbackLeft) {
+        options.trackSubjectRight = initialFallbackRight
+                && anchor->sourceFrame.subjectRight.detected;
+        options.trackSubjectLeft = initialFallbackLeft
+                && anchor->sourceFrame.subjectLeft.detected;
+        const bool useCachedSmallFrame = !targetSmall.empty()
+                && !anchor->smallImage.empty();
+        const cv::Mat& trackerAnchorImage = useCachedSmallFrame
+                ? anchor->smallImage : anchor->image;
+        const cv::Mat& trackerTargetImage = useCachedSmallFrame
+                ? targetSmall : image;
+        const PupilLightFrame trackerAnchorFrame = useCachedSmallFrame
+                ? makeFormalSmallPupilFrame(anchor->sourceFrame,
+                                            anchor->image.size())
+                : anchor->sourceFrame;
+        const auto matchBegin = std::chrono::steady_clock::now();
+        fallbackTracked = anchor->trackerCacheReady
+                ? tracker.trackOneFrameFromAnchorCached(
+                        trackerAnchorImage, trackerAnchorFrame,
+                        trackerTargetImage, imgNo, options,
+                        anchor->trackerCache, &tracked, &summary, &error)
+                : tracker.trackOneFrameFromAnchor(
+                        trackerAnchorImage, trackerAnchorFrame,
+                        trackerTargetImage, imgNo, options,
+                        &tracked, &summary, &error);
+        if (useCachedSmallFrame) {
+            mapFormalSmallFrameToOriginal(&tracked, image.size());
+        }
+        // 匹配器可能重置未请求的眼，因此恢复已经成功的LK结果。
+        if (flowRightSuccess && !options.trackSubjectRight) {
+            tracked.subjectRight = flowOutputRight;
+        }
+        if (flowLeftSuccess && !options.trackSubjectLeft) {
+            tracked.subjectLeft = flowOutputLeft;
+        }
+#if ENABLE_ALGO_TIMING_LOG
+        AlgoTiming::recordMilliseconds(
+                AlgoTimingStage_FormalSmallMatch,
+                std::chrono::duration<double, std::milli>(
+                        std::chrono::steady_clock::now() - matchBegin).count());
+        if (options.trackSubjectRight) {
+            AlgoTiming::event(AlgoTimingEvent_FormalMatchFallback);
+        }
+        if (options.trackSubjectLeft) {
+            AlgoTiming::event(AlgoTimingEvent_FormalMatchFallback);
+        }
+#endif
+    }
+
+    stPupilInfo pupilRight;
+    stPupilInfo pupilLeft;
+    bool rightRoiSuccess = false;
+    bool leftRoiSuccess = false;
+    PupilRoiRefineResult rightRoiDiagnostic;
+    PupilRoiRefineResult leftRoiDiagnostic;
+    if (flowRightSuccess || (initialFallbackRight && fallbackTracked
+                             && tracked.subjectRight.detected
+                             && tracked.subjectRight.reliable)) {
+        pupilRight = makeTrackedPupilInfo(tracked.subjectRight);
+        rightRoiSuccess = refineFormalPupilPrediction(
+                image, imgNo, whichEye_Right, pupilRight, pupilRight,
+                rightRoiDiagnostic);
+    }
+    if (flowLeftSuccess || (initialFallbackLeft && fallbackTracked
+                            && tracked.subjectLeft.detected
+                            && tracked.subjectLeft.reliable)) {
+        pupilLeft = makeTrackedPupilInfo(tracked.subjectLeft);
+        leftRoiSuccess = refineFormalPupilPrediction(
+                image, imgNo, whichEye_Left, pupilLeft, pupilLeft,
+                leftRoiDiagnostic);
+    }
+
+    // LK预测通过但129 ROI失败时，仅重试失败的那只眼，避免无谓重复匹配。
+    const bool flowRightRoiFailed = flowRightSuccess && !rightRoiSuccess;
+    const bool flowLeftRoiFailed = flowLeftSuccess && !leftRoiSuccess;
+#if ENABLE_ALGO_TIMING_LOG
+    if (flowRightRoiFailed) {
+        AlgoTiming::event(AlgoTimingEvent_FormalLKROIFailure);
+    }
+    if (flowLeftRoiFailed) {
+        AlgoTiming::event(AlgoTimingEvent_FormalLKROIFailure);
+    }
+#endif
+    if (flowRightRoiFailed || flowLeftRoiFailed) {
+        PupilLightTrackerOptions retryOptions = options;
+        retryOptions.trackSubjectRight = flowRightRoiFailed
+                && anchor->sourceFrame.subjectRight.detected;
+        retryOptions.trackSubjectLeft = flowLeftRoiFailed
+                && anchor->sourceFrame.subjectLeft.detected;
+        PupilLightFrame retryTracked;
+        PupilLightTrackerSummary retrySummary;
+        const bool useCachedSmallFrame = !targetSmall.empty()
+                && !anchor->smallImage.empty();
+        const cv::Mat& trackerAnchorImage = useCachedSmallFrame
+                ? anchor->smallImage : anchor->image;
+        const cv::Mat& trackerTargetImage = useCachedSmallFrame
+                ? targetSmall : image;
+        const PupilLightFrame trackerAnchorFrame = useCachedSmallFrame
+                ? makeFormalSmallPupilFrame(anchor->sourceFrame,
+                                            anchor->image.size())
+                : anchor->sourceFrame;
+        const auto retryMatchBegin = std::chrono::steady_clock::now();
+        const bool retryOk = anchor->trackerCacheReady
+                ? tracker.trackOneFrameFromAnchorCached(
+                        trackerAnchorImage, trackerAnchorFrame,
+                        trackerTargetImage, imgNo, retryOptions,
+                        anchor->trackerCache, &retryTracked, &retrySummary,
+                        &error)
+                : tracker.trackOneFrameFromAnchor(
+                        trackerAnchorImage, trackerAnchorFrame,
+                        trackerTargetImage, imgNo, retryOptions,
+                        &retryTracked, &retrySummary, &error);
+        if (useCachedSmallFrame) {
+            mapFormalSmallFrameToOriginal(&retryTracked, image.size());
+        }
+#if ENABLE_ALGO_TIMING_LOG
+        AlgoTiming::recordMilliseconds(
+                AlgoTimingStage_FormalSmallMatch,
+                std::chrono::duration<double, std::milli>(
+                        std::chrono::steady_clock::now()
+                        - retryMatchBegin).count());
+        if (retryOptions.trackSubjectRight) {
+            AlgoTiming::event(AlgoTimingEvent_FormalMatchFallback);
+        }
+        if (retryOptions.trackSubjectLeft) {
+            AlgoTiming::event(AlgoTimingEvent_FormalMatchFallback);
+        }
+#endif
+        if (retryOk && retryOptions.trackSubjectRight
+                && retryTracked.subjectRight.detected
+                && retryTracked.subjectRight.reliable) {
+            tracked.subjectRight = retryTracked.subjectRight;
+            pupilRight = makeTrackedPupilInfo(tracked.subjectRight);
+            rightRoiSuccess = refineFormalPupilPrediction(
+                    image, imgNo, whichEye_Right, pupilRight, pupilRight,
+                    rightRoiDiagnostic);
+        }
+        if (retryOk && retryOptions.trackSubjectLeft
+                && retryTracked.subjectLeft.detected
+                && retryTracked.subjectLeft.reliable) {
+            tracked.subjectLeft = retryTracked.subjectLeft;
+            pupilLeft = makeTrackedPupilInfo(tracked.subjectLeft);
+            leftRoiSuccess = refineFormalPupilPrediction(
+                    image, imgNo, whichEye_Left, pupilLeft, pupilLeft,
+                    leftRoiDiagnostic);
+        }
+        summary = retrySummary;
+        fallbackTracked = retryOk;
+    }
+
+    const bool finalRightValid = needRight && rightRoiSuccess;
+    const bool finalLeftValid = needLeft && leftRoiSuccess;
+    auto applyFinalEyeState = [](PupilLightEye& eye,
+                                 bool valid,
+                                 const stPupilInfo& pupil) {
+        if (valid) {
+            eye.detected = true;
+            eye.reliable = true;
+            eye.center = pupil.center;
+            eye.radius = static_cast<float>(pupil.radius);
+            eye.source = PupilSource_LightTrack;
+        } else {
+            eye.reliable = false;
+        }
+    };
+    applyFinalEyeState(tracked.subjectRight, finalRightValid, pupilRight);
+    applyFinalEyeState(tracked.subjectLeft, finalLeftValid, pupilLeft);
+    options.trackSubjectRight = initialFallbackRight || flowRightRoiFailed;
+    options.trackSubjectLeft = initialFallbackLeft || flowLeftRoiFailed;
+    const bool trackedOk = (!needRight || finalRightValid)
+            && (!needLeft || finalLeftValid);
+    const double elapsedMs = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - begin).count();
+#if ENABLE_ALGO_TIMING_LOG
+    if (needRight) {
+        AlgoTiming::event(finalRightValid
+                              ? AlgoTimingEvent_FormalRoi129Success
+                              : AlgoTimingEvent_FormalRoi129Failure);
+    }
+    if (needLeft) {
+        AlgoTiming::event(finalLeftValid
+                              ? AlgoTimingEvent_FormalRoi129Success
+                              : AlgoTimingEvent_FormalRoi129Failure);
+    }
+#endif
+
+    const bool rightLocated = needRight
+            && tracked.subjectRight.detected
+            && tracked.subjectRight.reliable;
+    const bool leftLocated = needLeft
+            && tracked.subjectLeft.detected
+            && tracked.subjectLeft.reliable;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        FormalAsyncRoundState& asyncState = m_rounds[roundIdx].asyncState;
+        const bool allEyesLocated = (!needRight || rightLocated)
+                && (!needLeft || leftLocated);
+        if (allEyesLocated) {
+            ++asyncState.masterAnchorMatchSuccess;
+        } else {
+            ++asyncState.masterAnchorMatchFailed;
+        }
+    }
+#if ENABLE_ALGO_TIMING_LOG
+    if (options.trackSubjectRight) {
+        AlgoTiming::event(rightLocated
+                              ? AlgoTimingEvent_FormalSmallMatchSuccess
+                              : AlgoTimingEvent_FormalSmallMatchFailure);
+    }
+    if (options.trackSubjectLeft) {
+        AlgoTiming::event(leftLocated
+                              ? AlgoTimingEvent_FormalSmallMatchSuccess
+                              : AlgoTimingEvent_FormalSmallMatchFailure);
+    }
+#endif
+
+#if 0
     const auto eyeFlags = get_eye_flags(m_eye);
     PupilLightTracker tracker;
     const bool useCachedSmallFrame = !smallImage.empty()
@@ -6050,6 +6497,7 @@ void CAlgo::processOneFormalAsyncFrame(
     const stPupilInfo pupilLeft = leftLocated
             ? makeTrackedPupilInfo(tracked.subjectLeft) : stPupilInfo{};
 
+#endif
 #if ENABLE_DL_FORMAL_NORMAL_DETAIL_LOG
     qDebug().noquote()
             << QString("FormalAsyncFrame: round=%1,photo=%2,scheduled=yes,"
@@ -6097,10 +6545,14 @@ void CAlgo::processOneFormalAsyncFrame(
                                 rightLocated, pupilRight,
                                 leftLocated, pupilLeft,
                                 measurementGeneration, roundGeneration,
-                                false);
+                                false, false, true);
     if (!generationIsCurrent()) {
         return;
     }
+    updateFormalFlowReferences(roundIdx, imgNo, image,
+                               rightLocated, pupilRight,
+                               leftLocated, pupilLeft,
+                               measurementGeneration, roundGeneration);
 
     {
         std::lock_guard<std::mutex> lock(m_mutex);
@@ -7574,6 +8026,8 @@ void CAlgo::startFormalC800Task(int roundIdx,
         bool leftConfirmed = false;
         FormalAnchorState rightAnchorState = FormalAnchor_NoAnchor;
         FormalAnchorState leftAnchorState = FormalAnchor_NoAnchor;
+        stPupilInfo c800PupilRight;
+        stPupilInfo c800PupilLeft;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
             MeasurementRound& round = m_rounds[roundIdx];
@@ -7590,11 +8044,13 @@ void CAlgo::startFormalC800Task(int roundIdx,
                 leftConfirmed = modelEyeFlags.second
                         && round.validLeft.test(imgNo);
                 if (rightConfirmed) {
+                    c800PupilRight = round.pupilInfoRight[imgNo];
                     setFormalAnchorConfirmedLocked(
                             roundIdx, true, round.pupilInfoRight[imgNo],
                             "c800_photo_roi_refined");
                 }
                 if (leftConfirmed) {
+                    c800PupilLeft = round.pupilInfoLeft[imgNo];
                     setFormalAnchorConfirmedLocked(
                             roundIdx, false, round.pupilInfoLeft[imgNo],
                             "c800_photo_roi_refined");
@@ -7612,6 +8068,14 @@ void CAlgo::startFormalC800Task(int roundIdx,
         const bool requiredEyesConfirmed =
                 (!modelEyeFlags.first || rightConfirmed)
                 && (!modelEyeFlags.second || leftConfirmed);
+        if (requiredEyesConfirmed) {
+            // 首张照片只有双眼129 ROI均确认后，才建立后续LK参考。
+            updateFormalFlowReferences(
+                    roundIdx, imgNo, modelImage,
+                    rightConfirmed, c800PupilRight,
+                    leftConfirmed, c800PupilLeft,
+                    measurementGeneration, roundGeneration);
+        }
         if (!requiredEyesConfirmed) {
             bool shouldEmitRetry = false;
             {

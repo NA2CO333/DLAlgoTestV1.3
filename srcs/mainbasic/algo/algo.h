@@ -437,6 +437,9 @@ private:
         std::shared_ptr<const FormalPupilAnchor> anchor;
         FormalEyeAnchorState rightAnchor;
         FormalEyeAnchorState leftAnchor;
+        // 每只眼独立维护的LK参考；只允许最终129 ROI确认后的照片更新。
+        PupilLightFlowReference flowRight;
+        PupilLightFlowReference flowLeft;
         // 记录最后一张照片（或缺失槽位）被标记为已处理的时间。
         std::chrono::steady_clock::time_point lastProcessedAt;
         // 固定主模板使用日志只输出一次，避免每张照片刷屏。
@@ -472,6 +475,8 @@ private:
             anchor.reset();
             rightAnchor = FormalEyeAnchorState{};
             leftAnchor = FormalEyeAnchorState{};
+            flowRight.clear();
+            flowLeft.clear();
             lastProcessedAt = std::chrono::steady_clock::time_point();
             masterAnchorUseLogged = false;
         }
@@ -869,6 +874,16 @@ private:
             const std::shared_ptr<const FormalPupilAnchor>& anchor,
             std::uint64_t measurementGeneration,
             std::uint64_t roundGeneration);
+    void updateFormalFlowReferences(
+            int roundIdx,
+            int imgNo,
+            const cv::Mat& image,
+            bool rightValid,
+            const stPupilInfo& pupilRight,
+            bool leftValid,
+            const stPupilInfo& pupilLeft,
+            std::uint64_t measurementGeneration,
+            std::uint64_t roundGeneration);
     void publishFormalAnchorFromRound(int roundIdx,
                                       int imgNo,
                                       const cv::Mat& image,
@@ -911,7 +926,8 @@ private:
                                     std::uint64_t measurementGeneration = 0,
                                     std::uint64_t roundGeneration = 0,
                                     bool allowTraditionalFallback = true,
-                                    bool onlyProcessMissingEyes = false);
+                                    bool onlyProcessMissingEyes = false,
+                                    bool predictionsAlreadyRefined = false);
 
     void logRoundDiagnosisLocked(int roundIdx, const QString &trigger);
 

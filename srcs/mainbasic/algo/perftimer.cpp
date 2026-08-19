@@ -443,10 +443,20 @@ void AlgoTiming::printRoundSummary(int roundIdx, const char* resultState)
         readEvent(index, AlgoTimingEvent_FormalRoi129Success);
     const int64_t roi129Failure =
         readEvent(index, AlgoTimingEvent_FormalRoi129Failure);
+    const int64_t lkAttempt =
+        readEvent(index, AlgoTimingEvent_FormalLKAttempt);
+    const int64_t lkSuccess =
+        readEvent(index, AlgoTimingEvent_FormalLKSuccess);
+    const int64_t lkFailure =
+        readEvent(index, AlgoTimingEvent_FormalLKFailure);
+    const int64_t lkRoiFailure =
+        readEvent(index, AlgoTimingEvent_FormalLKROIFailure);
+    const int64_t matchFallback =
+        readEvent(index, AlgoTimingEvent_FormalMatchFallback);
     const int64_t legacyHalfFallbackSuccess =
         readEvent(index, AlgoTimingEvent_HalfFallbackSuccess);
 
-    qDebug().noquote() << QString("[AlgoTiming][Round] round=%1 result=%2 begin_to_complete=%3ms first_frame_to_complete=%4ms first_frame_to_capture_complete=%5ms capture_complete_to_result=%6ms pupil_success=%7 pupil_failed=%8 process_success=%9 process_failed=%10 small_match_success=%11 small_match_failed=%12 roi129_success=%13 roi129_failed=%14 legacy_half_fallback_success=%15")
+    qDebug().noquote() << QString("[AlgoTiming][Round] round=%1 result=%2 begin_to_complete=%3ms first_frame_to_complete=%4ms first_frame_to_capture_complete=%5ms capture_complete_to_result=%6ms pupil_success=%7 pupil_failed=%8 process_success=%9 process_failed=%10 small_match_success=%11 small_match_failed=%12 lk_attempt=%13 lk_success=%14 lk_failed=%15 lk_roi_failed=%16 match_fallback=%17 roi129_success=%18 roi129_failed=%19 legacy_half_fallback_success=%20")
                           .arg(roundIdx)
                           .arg(QString::fromLatin1(resultState))
                           .arg(beginWallMs, 0, 'f', 2)
@@ -459,6 +469,11 @@ void AlgoTiming::printRoundSummary(int roundIdx, const char* resultState)
                           .arg(static_cast<qlonglong>(processFailure))
                           .arg(static_cast<qlonglong>(smallMatchSuccess))
                           .arg(static_cast<qlonglong>(smallMatchFailure))
+                          .arg(static_cast<qlonglong>(lkAttempt))
+                          .arg(static_cast<qlonglong>(lkSuccess))
+                          .arg(static_cast<qlonglong>(lkFailure))
+                          .arg(static_cast<qlonglong>(lkRoiFailure))
+                          .arg(static_cast<qlonglong>(matchFallback))
                           .arg(static_cast<qlonglong>(roi129Success))
                           .arg(static_cast<qlonglong>(roi129Failure))
                           .arg(static_cast<qlonglong>(legacyHalfFallbackSuccess));
@@ -476,6 +491,7 @@ void AlgoTiming::printRoundSummary(int roundIdx, const char* resultState)
                        << statText("c800_postprocess", snapshot(index, AlgoTimingStage_C800Postprocess, false))
                        << statText("small_resize", snapshot(index, AlgoTimingStage_FormalSmallResize, false))
                        << statText("small_match", snapshot(index, AlgoTimingStage_FormalSmallMatch, false))
+                       << statText("lk_total_ms", snapshot(index, AlgoTimingStage_FormalLK, false))
                        << statText("roi129_right", snapshot(index, AlgoTimingStage_Roi129Right, false))
                        << statText("haar_normal", snapshot(index, AlgoTimingStage_HaarNormal, false))
                        << statText("pupil_right", snapshot(index, AlgoTimingStage_PupilRight, false))
@@ -528,6 +544,7 @@ void AlgoTiming::printMeasurementSummary(int roundCount, int formalFrameCount,
                        << statText("c800_total_all", aggregateFormal(AlgoTimingStage_C800Total))
                        << statText("c800_forward_all", aggregateFormal(AlgoTimingStage_C800Forward))
                        << statText("small_match_all", aggregateFormal(AlgoTimingStage_FormalSmallMatch))
+                       << statText("lk_total_ms_all", aggregateFormal(AlgoTimingStage_FormalLK))
                        << statText("roi129_all", aggregateFormalStages(
                                       AlgoTimingStage_Roi129Right,
                                       AlgoTimingStage_Roi129Left));

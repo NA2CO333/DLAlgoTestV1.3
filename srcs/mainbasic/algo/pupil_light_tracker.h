@@ -5,6 +5,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdint>
 
 #include <opencv2/core.hpp>
 
@@ -122,9 +123,71 @@ struct PupilLightTrackerOptions
     // 但重试结果仍必须通过小图几何约束和后续129 ROI。
     float minimumMatchScore = 0.70F;
     float retryMatchScore = 0.60F;
+    // LK 光流参数集中放在选项中，方便 RK3568 上机时调整而不改变调用流程。
+    int flowMaximumFeatures = 30;
+    double flowFeatureQualityLevel = 0.01;
+    double flowFeatureMinimumDistance = 3.0;
+    cv::Size flowWindowSize = cv::Size(21, 21);
+    int flowMaximumLevel = 2;
+    int flowMinimumValidPoints = 6;
+    double flowMaximumBackwardError = 2.5;
+    double flowMaximumResidual = 8.0;
+    // 相邻照片在400×160小图上的最大允许位移；超限时交给完整半区Match兜底。
+    double flowMaximumDisplacement = 80.0;
+    double flowMinimumValidRatio = 0.50;
+    int flowFeatureHalfWindow = 24;
     // 默认重跟踪全部非锚点；补充中间锚点时可只重算受影响区段（0基图像索引，含首尾）。
     int trackingBeginIndex = -1;
     int trackingEndIndex = -1;
+};
+
+enum PupilLightFlowFailureReason
+{
+    PupilLightFlow_None = 0,
+    PupilLightFlow_InvalidInput,
+    PupilLightFlow_NoFeatures,
+    PupilLightFlow_TooFewValidPoints,
+    PupilLightFlow_LowValidRatio,
+    PupilLightFlow_BackwardError,
+    PupilLightFlow_ResidualTooLarge,
+    PupilLightFlow_PredictionOutOfBounds,
+    PupilLightFlow_Exception
+};
+
+// 每只眼独立维护的不可变 LK 参考快照；任务只复制该结构，不持有算法状态锁。
+struct PupilLightFlowReference
+{
+    bool valid = false;
+    cv::Mat gray;
+    std::vector<cv::Point2f> points;
+    cv::Point2f center;
+    float radius = 0.0F;
+    int sourceImgNo = -1;
+    std::uint64_t measurementGeneration = 0;
+    std::uint64_t roundGeneration = 0;
+
+    void clear()
+    {
+        valid = false;
+        gray.release();
+        points.clear();
+        center = cv::Point2f();
+        radius = 0.0F;
+        sourceImgNo = -1;
+        measurementGeneration = 0;
+        roundGeneration = 0;
+    }
+};
+
+struct PupilLightFlowResult
+{
+    bool success = false;
+    cv::Point2f center;
+    float radius = 0.0F;
+    int validPointCount = 0;
+    double validPointRatio = 0.0;
+    double elapsedMs = 0.0;
+    PupilLightFlowFailureReason failureReason = PupilLightFlow_None;
 };
 
 struct PupilLightTrackerSummary
@@ -207,6 +270,22 @@ struct PupilLightTrackerCache
 class PupilLightTracker
 {
 public:
+    // 从最终129 ROI确认坐标建立单眼 LK 参考；失败时不产生可用参考。
+    bool buildFlowReference(
+            const cv::Mat &gray,
+            const PupilLightEye &eye,
+            const PupilLightTrackerOptions &options,
+            PupilLightFlowReference *reference,
+            std::string *errorMessage = nullptr) const;
+
+    // 使用最近一次可靠参考执行单眼前向/反向 LK 光流和稳健位移校验。
+    bool trackOneEyeByFlow(
+            const PupilLightFlowReference &reference,
+            const cv::Mat &targetGray,
+            const PupilLightTrackerOptions &options,
+            PupilLightFlowResult *result,
+            std::string *errorMessage = nullptr) const;
+
     // 流式正式拍摄使用：模型锚点就绪后，按当前已经到达的连续帧追加梯度。
     // grayImages 可以从 8 张逐步增长到 22 张；已生成的梯度不会重复计算。
     // frames 使用完整轮次长度，模型锚点位置必须提前填写并设置 isAnchor=true。
